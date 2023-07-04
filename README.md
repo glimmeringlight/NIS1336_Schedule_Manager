@@ -1,6 +1,6 @@
 # NIS1336_Schedule_Manager
 
-#### `Account.cpp`中实现对账号的注册、登录、修改密码的功能
+### `Account.cpp`中实现对账号的注册、登录、修改密码的功能
 
 ```
 Account account("filename.txt");
@@ -50,7 +50,9 @@ int login(const char* username, const char* password, User* user);
 
 **3.修改密码**
 
-#### `Tasks.cpp`中实现任务加载和任务保存的功能
+
+
+### `Tasks.cpp`中实现任务加载和任务保存的功能
 
 **1.任务加载**
 ```

@@ -42,10 +42,10 @@ registerUser("Alice","12345678");
 **2.登录**
 
 ```
-int login(const char* username, const char* password);
+int login(const char* username, const char* password, User* user);
 ```
 
-注册成功则返回`True`，注册过程中会检查用户名是否已经存在。如果该用户名可用，注册过程中会在`USER`文件夹中新建文件`username.txt`。
+返回的`int`值为`USER_PWD.txt`中的用户编号，如果登陆失败返回`0`。`user`中记录了登录成功的用户信息。
 
 
 **3.修改密码**

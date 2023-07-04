@@ -1,12 +1,5 @@
-#include <vector>
-#include <string>
-#include <ctime>
-#include "types.h"
+#include "Tasks.h"
 
-
-using namespace std;
-
-extern const string USER_DIR = "USER/";
 
 
 Priority convertToPriority(const string& priorityStr) {
@@ -165,7 +158,7 @@ void loadTask(vector<Task>& tasks, const User* user){
 
 
 
-void saveTask(vector<Task>& tasks, const User* user){
+void saveTask(const vector<Task>& tasks, const User* user){
 
     string user_name(user->username);
     string filename = USER_DIR + user_name + ".txt" ;

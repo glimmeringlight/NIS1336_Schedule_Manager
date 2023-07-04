@@ -15,7 +15,7 @@ public:
     ~Account();
 
     bool registerUser(const char* username, const char* password);
-    int login(const char* username, const char* password);
+    int login(const char* username, const char* password, User* user);
     bool changePassword(const char* username, const char* password);
 
 private:

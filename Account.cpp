@@ -80,7 +80,9 @@ int countUser(const string& filename) {
 }
 
 
-int isValid(const string& username, const string& password, const string& filename) {
+int isValid(const string& username, const string& password, const string& filename, User* user) {
+
+
     ifstream file(filename);
     if (!file) {
         // should not happen
@@ -97,7 +99,11 @@ int isValid(const string& username, const string& password, const string& filena
         if (getline(iss, id, '.') && getline(iss, name, ',') && getline(iss, storedPassword)) {
             // printf("%s %s %s\n", id.c_str(), name.c_str(), storedPassword.c_str());
             if (name == username && storedPassword == password) {
-                return stoi(id); 
+
+                user->id = stoi(id);
+                strcpy(user->username,name.c_str());
+                strcpy(user->password,password.c_str());
+                return user->id; 
             }
         }
     }
@@ -152,7 +158,7 @@ bool Account::registerUser(const char* input_username, const char* input_pwd)
 }
 
 
-int Account::login(const char* input_username, const char* input_pwd)
+int Account::login(const char* input_username, const char* input_pwd, User* user)
 {
 
     string username(input_username);
@@ -162,9 +168,8 @@ int Account::login(const char* input_username, const char* input_pwd)
     string hashpwd = hashString(password);
 
     // verify
-    User user;
     int userid;
-    userid = isValid(username, hashpwd, filename );
+    userid = isValid(username, hashpwd, filename, user );
     if ( userid ) {
         printf("Login successful!\n");
         return userid;
@@ -174,3 +179,6 @@ int Account::login(const char* input_username, const char* input_pwd)
     }
 
 }
+
+
+

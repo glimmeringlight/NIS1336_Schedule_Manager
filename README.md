@@ -50,7 +50,18 @@ int login(const char* username, const char* password, User* user);
 
 **3.修改密码**
 
+#### `Tasks.cpp`中实现任务加载和任务保存的功能
 
+**1.任务加载**
+```
+void loadTask(vector<Task>& tasks, const User* user);
+```
 
+**2.任务保存**
+```
+void saveTask(const vector<Task>& tasks, const User* user);
+```
+
+注：`s_time`和`rem`在`username.txt`中保存的格式为`YYYY-MM-DD HH:MM:SS`
 
 

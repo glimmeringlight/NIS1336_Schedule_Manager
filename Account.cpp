@@ -80,14 +80,16 @@ int countUser(const string& filename) {
 }
 
 
-int isValid(const string& username, const string& password, const string& filename, User* user) {
+User isValid(const string& username, const string& password, const string& filename) {
 
+    User user;
+    user.id = 0;
 
     ifstream file(filename);
     if (!file) {
         // should not happen
         printf("Account file cannot open!\n");
-        return 0;
+        return user;
     }
 
     string line;
@@ -100,16 +102,16 @@ int isValid(const string& username, const string& password, const string& filena
             // printf("%s %s %s\n", id.c_str(), name.c_str(), storedPassword.c_str());
             if (name == username && storedPassword == password) {
 
-                user->id = stoi(id);
-                strcpy(user->username,name.c_str());
-                strcpy(user->password,password.c_str());
-                return user->id; 
+                user.id = stoi(id);
+                strcpy(user.username,name.c_str());
+                strcpy(user.password,password.c_str());
+                return user; 
             }
         }
     }
 
     file.close();
-    return 0; 
+    return user; 
 }
 
 
@@ -158,7 +160,7 @@ bool Account::registerUser(const char* input_username, const char* input_pwd)
 }
 
 
-int Account::login(const char* input_username, const char* input_pwd, User* user)
+User Account::login(const char* input_username, const char* input_pwd)
 {
 
     string username(input_username);
@@ -168,15 +170,14 @@ int Account::login(const char* input_username, const char* input_pwd, User* user
     string hashpwd = hashString(password);
 
     // verify
-    int userid;
-    userid = isValid(username, hashpwd, filename, user );
-    if ( userid ) {
+    User user;
+    user = isValid(username, hashpwd, filename);
+    if ( user.id != 0 ) {
         printf("Login successful!\n");
-        return userid;
     } else {
         printf("Incorrect user name or password. Please check your input.\n");
-        return 0;
     }
+    return user;
 
 }
 

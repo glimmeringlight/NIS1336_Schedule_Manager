@@ -52,7 +52,7 @@ int login(const char* username, const char* password, User* user);
 
 
 
-### `Tasks.cpp`中实现任务加载和任务保存的功能
+### `Tasks.cpp`中实现任务的加载、保存和打印的功能
 
 **1.任务加载**
 ```

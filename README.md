@@ -49,6 +49,12 @@ int login(const char* username, const char* password, User* user);
 
 
 **3.修改密码**
+```
+bool changePassword(const char* username, const char* password, const char* newpassword);
+```
+若密码修改成功则返回`true`。
+
+
 
 
 

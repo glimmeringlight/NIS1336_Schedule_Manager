@@ -66,4 +66,30 @@ void saveTask(const vector<Task>& tasks, const User* user);
 
 注：`s_time`和`rem`在`username.txt`中保存的格式为`YYYY-MM-DD HH:MM:SS`
 
+示例`USER/Alice.txt`：
+```
+1,Study,2023-07-05 21:47:00,LOW,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Study!
+2,Play,2023-07-03 21:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Play!
+3,Play,2023-07-04 21:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Play!
+4,Run,2023-07-04 23:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Run!
+```
+
+
+
+
+**3.任务打印**
+```
+void showTask(const vector<Task>& tasks);
+```
+
+输出示例（按`Start Time`从小到大排序）：
+```
+ID	Task Name   Start Time              Priority    Category        Remind Time             Details
+ 2	Play        2023-07-03 21:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Play!
+ 3	Play        2023-07-04 21:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Play!
+ 4	Run         2023-07-04 23:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Run!
+ 1	Study       2023-07-05 21:47:00     LOW         ENTERTAINMENT   2023-07-05 00:00:00     GO TO Study!
+```
+
+
 

@@ -1,12 +1,6 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <functional>
-#include <fstream>
-#include <cstring>
+#ifndef TYPES_H
+#define TYPES_H
 #include <time.h>
-#include <iostream>
-#include <iomanip>
 
 enum Priority{
     HIGH, MODERATE, LOW
@@ -32,3 +26,4 @@ typedef struct{
     char username[32];
     char password[128]; // hash
 }User;
+#endif

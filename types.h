@@ -18,7 +18,7 @@ enum Category{
 
 typedef struct
 {
-    int id;
+    int id; 
     char name[32];
     time_t s_time;  //任务启动时间
     Priority prio;  //任务优先级

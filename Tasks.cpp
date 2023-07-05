@@ -1,7 +1,6 @@
 #include "Tasks.h"
 
 
-
 Priority convertToPriority(const string& priorityStr) {
     if (priorityStr == "HIGH") {
         return HIGH;
@@ -15,6 +14,7 @@ Priority convertToPriority(const string& priorityStr) {
     }
 }
 
+
 Category convertToCategory(const string& categoryStr) {
     if (categoryStr == "STUDY") {
         return STUDY;
@@ -27,6 +27,7 @@ Category convertToCategory(const string& categoryStr) {
         return STUDY;
     }
 }
+
 
 time_t convertToTime(const string& timeStr) {
     // timeStr:YYYY-MM-DD HH:MM:SS
@@ -49,6 +50,7 @@ string convertPriorityToString(Priority priority) {
             return "LOW";
     }
 }
+
 
 string convertCategoryToString(Category category) {
     switch (category) {
@@ -73,10 +75,6 @@ string convertTimeToString(time_t time) {
 
     return ss.str();
 }
-
-
-
-
 
 
 void loadTask(vector<Task>& tasks, const User* user){
@@ -154,10 +152,6 @@ void loadTask(vector<Task>& tasks, const User* user){
 }
 
 
-
-
-
-
 void saveTask(const vector<Task>& tasks, const User* user){
 
     string user_name(user->username);
@@ -185,3 +179,19 @@ void saveTask(const vector<Task>& tasks, const User* user){
 }
 
 
+void showTask(const vector<Task>& tasks) {
+    vector<Task> newtasks(tasks);
+
+    sort(newtasks.begin(), newtasks.end(), [](const Task& t1, const Task& t2) {
+        return t1.s_time < t2.s_time;
+    });
+
+    printf("The info of all tasks (most recent start time comes first):\n");
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+
+    for (const auto& task : newtasks) {
+        printf("%2d\t%-12s%-24s%-12s%-16s%-24s%s\n", task.id, task.name, convertTimeToString(task.s_time).c_str(),
+               convertPriorityToString(task.prio).c_str(), convertCategoryToString(task.cat).c_str(),
+               convertTimeToString(task.rem).c_str(), task.detail);
+    }
+}

@@ -6,12 +6,12 @@
 #include <ctime>
 #include "types.h"
 
-
 using namespace std;
 
 extern const string USER_DIR;
 
 
+void showTask(const vector<Task>& tasks);
 void loadTask(vector<Task>& tasks, const User* user);
 void saveTask(const vector<Task>& tasks, const User* user);
 

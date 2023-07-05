@@ -182,4 +182,67 @@ User Account::login(const char* input_username, const char* input_pwd)
 }
 
 
+bool Account::changePassword(const char* username, const char* oldpassword, const char* newpassword)
+{
+    string uname(username);
+    string oldpwd(oldpassword);
+    string newpwd(newpassword);
+
+    //hash
+    string hashOldPwd = hashString(oldpwd);
+    string hashNewPwd = hashString(newpwd);
+
+    // Verify 
+    User user = isValid(uname, hashOldPwd, filename);
+    if (user.id == 0)
+    {
+        printf("Incorrect user name or password. Please check your input.\n");
+        return false;
+    }
+
+    // Update 
+    ifstream file(filename);
+    if (!file)
+    {
+        // should not happen
+        printf("Account file cannot open!\n");
+        return false;
+    }
+
+    ofstream tempFile("temp.txt"); // temporary file
+
+    string line;
+    while (getline(file, line))
+    {
+        istringstream iss(line);
+        string id, name, storedPassword;
+
+        if (getline(iss, id, '.') && getline(iss, name, ',') && getline(iss, storedPassword))
+        {
+            if (name == uname && storedPassword == hashOldPwd)
+            {
+                tempFile << id << '.' << name << ',' << hashNewPwd << '\n';
+            }
+            else
+            {
+                // Write the existing line to the temporary file
+                tempFile << line << '\n';
+            }
+        }
+    }
+
+    file.close();
+    tempFile.close();
+
+    // replace
+    remove(filename.c_str());
+    rename("temp.txt", filename.c_str());
+
+    printf("Password change successful!\n");
+
+    return true;
+
+}
+
+
 

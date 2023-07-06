@@ -182,9 +182,9 @@ User Account::login(const char* input_username, const char* input_pwd)
     User user;
     user = isValid(username, hashpwd, filename);
     if ( user.id != 0 ) {
-        printf("Login successful!\n");
+        //printf("Login successful!\n");
     } else {
-        printf("Incorrect user name or password. Please check your input.\n");
+        //printf("Incorrect user name or password. Please check your input.\n");
     }
     return user;
 

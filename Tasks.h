@@ -25,5 +25,7 @@ string convertPriorityToString(Priority priority);
 string convertCategoryToString(Category category);
 string convertTimeToString(time_t time);
 
+int getminId(vector<Task> tasks);
+
 
 #endif

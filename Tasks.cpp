@@ -202,3 +202,22 @@ void showTask(const vector<Task>& tasks) {
                convertTimeToString(task.rem).c_str(), task.detail);
     }
 }
+
+int getminId(vector<Task> tasks) {
+    int size = tasks.size();
+    if(size <=0) return 1;
+    for(int i=0;i<size;i++){
+        while(tasks[i].id>0&&tasks[i].id<size&&(i!=tasks[i].id)){
+            int t = tasks[i].id;
+            if(tasks[t].id==tasks[i].id) break;
+            int tmp = tasks[i].id;
+            tasks[i].id=tasks[t].id;
+            tasks[t].id = tmp;
+        }
+    }
+    for(int i =1;i<size;i++){
+        if(i!=tasks[i].id)return i;
+    }
+
+    return size+(tasks[0].id==(size));
+}

@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 #include <time.h>
+#include<pthread.h>
 
 enum Priority{
     HIGH, MODERATE, LOW
@@ -26,4 +27,10 @@ typedef struct{
     char username[32];
     char password[128]; // hash
 }User;
+
+typedef struct{
+    User* user;
+    pthread_mutex_t* mutex;
+}Thread_Arg;
+
 #endif

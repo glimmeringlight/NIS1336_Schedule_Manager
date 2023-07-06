@@ -5,6 +5,7 @@
 #include <string>
 #include <ctime>
 #include "types.h"
+#include "Account.h"
 
 using namespace std;
 

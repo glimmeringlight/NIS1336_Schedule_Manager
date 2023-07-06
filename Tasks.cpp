@@ -1,4 +1,11 @@
 #include "Tasks.h"
+#include<time.h>
+#include<iostream>
+#include<sstream>
+#include<iomanip>
+#include<fstream>
+#include<string.h>
+#include<algorithm>
 
 
 Priority convertToPriority(const string& priorityStr) {
@@ -82,7 +89,7 @@ void loadTask(vector<Task>& tasks, const User* user){
     tasks.clear(); 
 
     string user_name(user->username);
-    string filename = USER_DIR + user_name + ".txt" ;
+    string filename = "./" + USER_DIR + user_name + ".txt" ;
 
     ifstream file(filename);
     if (!file) {

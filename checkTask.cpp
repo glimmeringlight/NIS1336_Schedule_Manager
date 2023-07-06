@@ -4,43 +4,37 @@
 #include<vector>
 #include<pthread.h>
 #include"types.h"
+#include"Tasks.h"
 
-int checkTask(pthread_mutex_t* mutex){
-    std::vector<Task> tasklist;
-
-    //get tasklist
-    pthread_mutex_lock(mutex);
-    
-
-    struct tm *now_time;
-
-    //get current time
-    time_t n;
-    time(&n);
-    now_time = localtime(&n);
-    
-
-}
 
 void *thread2(void * arg){
     printf("CheckTask begins!\n");
     int flag = 1;
-    int check_interval = 60;
+    int check_interval = 5;
 
-    //get mutex
-    pthread_mutex_t* mutex = (pthread_mutex_t*)arg;
+    //get args
+    Thread_Arg* thread_arg_ptr = (Thread_Arg*)arg;
+    pthread_mutex_t* mutex = thread_arg_ptr->mutex;
+    User* user = thread_arg_ptr->user;
 
-    while(flag){
-        checkTask(mutex);   //arg mutex is a ptr
+    std::vector<Task> tasklist;
+
+    //checktask
+    while(1){
+        //read tasklist
+        pthread_mutex_lock(mutex);
+        loadTask(tasklist, user);
+        pthread_mutex_unlock(mutex);
+
+        //get current time
+        time_t timep;
+        time(&timep);
+
+        printf("In the loop\n");
+
         sleep(check_interval);
     }
 
-    return;
+    return NULL;
     
-}
-
-int main(){
-    thread2();
-
-    return 0;
 }

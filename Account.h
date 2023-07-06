@@ -16,7 +16,7 @@ public:
 
     bool registerUser(const char* username, const char* password);
     User login(const char* username, const char* password);
-    bool changePassword(const char* username, const char* password);
+    bool changePassword(const char* username, const char* password, const char* newpassword);
 
 private:
     string filename;

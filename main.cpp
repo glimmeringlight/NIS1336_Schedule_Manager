@@ -38,6 +38,7 @@ int main(){
             printf("Username or password is wrong! Login failed!\n");
             exit(-1);
         }
+
         printf("Login successfully! Welcome %s.\n", current_user.username);
         break;
     
@@ -46,6 +47,7 @@ int main(){
         exit(-1);
         break;
     }
+
 
 
     //互斥锁，用于互斥地访问
@@ -57,6 +59,7 @@ int main(){
     thread_arg.user = &current_user;
 
     // ret = pthread_create(&(tids[0]), NULL, thread1, &mutex);
+
     // if(ret){
     //     printf("Create thread failed.\n");
     //     exit(-1);

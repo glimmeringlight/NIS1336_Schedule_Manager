@@ -3,6 +3,7 @@
 #include <time.h>
 #include<pthread.h>
 
+
 enum Priority{
     HIGH, MODERATE, LOW
 };

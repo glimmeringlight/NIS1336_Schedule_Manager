@@ -36,5 +36,5 @@ void *thread2(void * arg){
     }
 
     return NULL;
-    
+   
 }

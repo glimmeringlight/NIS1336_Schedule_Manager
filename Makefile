@@ -6,7 +6,6 @@ all: main
 main: Account.o 
 	$(CXX) $(CXXFLAGS) -o main main.cpp Account.o checkTask.cpp Tasks.cpp -lpthread
 
-
 clean:
 	rm -f *.o main
 	rm USER_PWD.txt

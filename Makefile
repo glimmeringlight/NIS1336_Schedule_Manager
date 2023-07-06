@@ -3,8 +3,8 @@ CXXFLAGS=-std=c++11  # 指定编译选项
 
 all: main
 
-main: Account.o 
-	$(CXX) $(CXXFLAGS) -o main main.cpp Account.o checkTask.cpp Tasks.cpp -lpthread
+main:
+	$(CXX) $(CXXFLAGS) -o main main.cpp Account.cpp checkTask.cpp Tasks.cpp -lpthread
 
 clean:
 	rm -f *.o main

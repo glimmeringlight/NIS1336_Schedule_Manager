@@ -8,5 +8,4 @@ main: Account.o
 
 clean:
 	rm -f *.o main
-	rm USER_PWD.txt
 

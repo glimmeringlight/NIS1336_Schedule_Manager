@@ -98,8 +98,8 @@ void loadTask(vector<Task>& tasks, const User* user){
     if(fd == -1){
         FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
         fclose(fp);
+        fd = open((USER_DIR + user_name).c_str(), O_RDWR);
     }
-    fd = open((USER_DIR + user_name).c_str(), O_RDWR);
     
     struct flock fl;
     fl.l_type = F_WRLCK;
@@ -194,8 +194,8 @@ void saveTask(const vector<Task>& tasks, const User* user){
     if(fd == -1){
         FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
         fclose(fp);
+        fd = open((USER_DIR + user_name).c_str(), O_RDWR);
     }
-    fd = open((USER_DIR + user_name).c_str(), O_RDWR);
     
     struct flock fl;
     fl.l_type = F_WRLCK;

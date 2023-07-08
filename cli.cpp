@@ -5,6 +5,7 @@
 #include<string.h>
 #include<sstream>
 #include<iomanip>
+#include<unistd.h>
 #include "Tasks.h"
 
 void showTask(int argc, char * argv[]);
@@ -13,6 +14,7 @@ void delTask(int argc, char * argv[]);
 void userLogin(int argc, char * argv[]);
 void userRegister(int argc, char * argv[]);
 void changePasswd(int argc, char * argv[]);
+void checkTask(int argc, char* argv[]);
 void cmdError();
 void showUsage();
 
@@ -25,6 +27,7 @@ int main(int argc, char * argv[]){
     ./cli login -u username -p password
     ./cli reg -u username -p password
     ./cli passwd -u username -p password -n newpassword
+    ./cli check -u username -p password
     */
 
     int op = 0;
@@ -35,6 +38,7 @@ int main(int argc, char * argv[]){
     if(!strncmp(argv[1], "login", 5)) op = 5;
     if(!strncmp(argv[1], "reg", 3)) op = 6;
     if(!strncmp(argv[1], "passwd", 6)) op = 7;
+    if(!strncmp(argv[1], "check", 5)) op = 8;
 
     switch (op)
     {
@@ -64,6 +68,10 @@ int main(int argc, char * argv[]){
 
     case 7:
         changePasswd(argc, argv);
+        break;
+
+    case 8:
+        checkTask(argc, argv);
         break;
 
 
@@ -465,6 +473,78 @@ void changePasswd(int argc, char* argv[]){
         printf("Change password failed!\n");
         exit(-1);
     }
+}
+
+void checkTask(int argc, char* argv[]){
+    char* username = NULL;
+    char* password = NULL;
+    Account account("USER_PWD.txt");
+
+    char optret;
+    while((optret = getopt(argc,argv,"u:p:"))!=-1){
+        switch(optret){
+            case 'u':
+            username = optarg;
+            break;
+
+        case 'p':
+            password = optarg;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if(username == NULL || password == NULL){
+        printf("Too few arguments!\n");
+        exit(-1);
+    }
+
+    User user = account.login(username, password);
+
+    if(user.id == 0){
+        printf("User auth failed!\n");
+        exit(-1);
+    }
+
+    //check task begin
+    int interval = 60;
+    std::vector<Task> tasklist;
+    struct tm *current_time;
+    struct tm *task_time;
+    double difft = 0;
+
+    while(true){
+        loadTask(tasklist, &user);
+
+        //get current time
+        time_t timep;
+        time(&timep);
+        current_time = localtime(&timep);
+
+        //check arriving tasks
+        for(int i = 0; i<tasklist.size(); ++i){
+            
+            task_time = localtime(&(tasklist[i].rem));
+            
+            if(task_time->tm_year != current_time->tm_year) continue;
+            if(task_time->tm_mon != current_time->tm_mon) continue;
+            if(task_time->tm_mday != current_time->tm_mday) continue;
+            // day match if here
+            difft = difftime(tasklist[i].rem, timep);
+
+            if(difft > 0 && difft < 5*60){
+                printf("Task %d %s is arriving: %s.\n", 
+                    tasklist[i].id, tasklist[i].name, tasklist[i].detail);
+            }
+
+        }
+
+
+        sleep(interval);
+    }
+
 }
 
 void cmdError(){

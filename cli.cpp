@@ -10,6 +10,9 @@
 void showTask(int argc, char * argv[]);
 void addTask(int argc, char * argv[]);
 void delTask(int argc, char * argv[]);
+void userLogin(int argc, char * argv[]);
+void userRegister(int argc, char * argv[]);
+void changePasswd(int argc, char * argv[]);
 void cmdError();
 void showUsage();
 
@@ -19,6 +22,9 @@ int main(int argc, char * argv[]){
     ./cli show -u username -p password 
     ./cli add -u username -p password -n name -p prio -c cat -r rem -d detail -s start
     ./cli del -u username -p password -i id
+    ./cli login -u username -p password
+    ./cli reg -u username -p password
+    ./cli passwd -u username -p password -n newpassword
     */
 
     int op = 0;
@@ -26,6 +32,9 @@ int main(int argc, char * argv[]){
     if(!strncmp(argv[1], "add", 3)) op = 2;
     if(!strncmp(argv[1], "del", 3)) op = 3;
     if(!strncmp(argv[1], "help", 4)) op = 4;
+    if(!strncmp(argv[1], "login", 5)) op = 5;
+    if(!strncmp(argv[1], "reg", 3)) op = 6;
+    if(!strncmp(argv[1], "passwd", 6)) op = 7;
 
     switch (op)
     {
@@ -43,6 +52,18 @@ int main(int argc, char * argv[]){
 
     case 4:
         showUsage();
+        break;
+
+    case 5:
+        userLogin(argc, argv);
+        break;
+
+    case 6:
+        userRegister(argc, argv);
+        break;
+
+    case 7:
+        changePasswd(argc, argv);
         break;
 
 
@@ -110,7 +131,7 @@ void addTask(int argc, char * argv[]){
     char* cat = NULL;
     strcpy(prio, "LOW");
     strcpy(cat, "LIFE");
-    
+
     char* rem = NULL;
     char* detail = NULL;
     char* st = NULL;
@@ -332,10 +353,118 @@ void delTask(int argc, char * argv[]){
         printf("Cannot find this task.\n");
     }
     
+}
 
+void userLogin(int argc, char* argv[]){
+    char* username = NULL;
+    char* password = NULL;
+    Account account("USER_PWD.txt");
 
+    char optret;
+    while((optret = getopt(argc,argv,"u:p:"))!=-1){
+        switch(optret){
+            case 'u':
+            username = optarg;
+            break;
 
+        case 'p':
+            password = optarg;
+            break;
 
+        default:
+            break;
+        }
+    }
+
+    if(username == NULL || password == NULL){
+        printf("Too few arguments!\n");
+        exit(-1);
+    }
+
+    User user = account.login(username, password);
+
+    if(user.id == 0){
+        printf("User auth failed!\n");
+        exit(-1);
+    }else{
+        printf("Successfully loged in as %s.\n", user.username);
+    }
+}
+
+void userRegister(int argc, char* argv[]){
+    char* username = NULL;
+    char* password = NULL;
+    Account account("USER_PWD.txt");
+
+    char optret;
+    while((optret = getopt(argc,argv,"u:p:"))!=-1){
+        switch(optret){
+            case 'u':
+            username = optarg;
+            break;
+
+        case 'p':
+            password = optarg;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if(username == NULL || password == NULL){
+        printf("Too few arguments!\n");
+        exit(-1);
+    }
+
+    bool flag = account.registerUser(username, password);
+    if(flag){
+        printf("Registration succeeded!\n");
+    }else{
+        printf("Registration failed!\n");
+        exit(-1);
+    }
+}
+
+void changePasswd(int argc, char* argv[]){
+    char* username = NULL;
+    char* password = NULL;
+    char* new_password = NULL;
+    Account account("USER_PWD.txt");
+
+    char optret;
+    while((optret = getopt(argc,argv,"u:p:n:"))!=-1){
+        switch(optret){
+            case 'u':
+            username = optarg;
+            break;
+
+        case 'p':
+            password = optarg;
+            break;
+
+        case 'n':
+            new_password = optarg;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if(username == NULL || password == NULL || new_password == NULL){
+        printf("Too few arguments!\n");
+        exit(-1);
+    }
+
+    bool flag = account.changePassword(username, password, new_password);
+
+    if(flag){
+        printf("Changed password successfully!\n");
+    }else{
+        printf("Change password failed!\n");
+        exit(-1);
+    }
 }
 
 void cmdError(){
@@ -347,4 +476,10 @@ void showUsage(){
     printf("./cli show -u username -p password\n");
     printf("./cli add -u username -p password -n name -p prio -c cat -r rem -d detail -s start\n");
     printf("./cli del -u username -p password -i id\n");
+    printf("./cli login -u username -p password\n");
+    printf("./cli reg -u username -p password\n");
+    printf("./cli passwd -u username -p password -n newpassword\n");
+    
+    
+    
 }

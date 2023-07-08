@@ -162,7 +162,7 @@ bool Account::registerUser(const char* input_username, const char* input_pwd)
     string user_file = USER_DIR + username + ".txt";
     ofstream ufile(user_file);
 
-    printf("Registration successful!\n");
+    // printf("Registration successful!\n");
 
 
     return true;

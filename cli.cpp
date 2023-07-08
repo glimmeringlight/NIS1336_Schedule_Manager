@@ -515,6 +515,7 @@ void checkTask(int argc, char* argv[]){
 
     while(true){
         loadTask(tasklist, &user);
+        printf("checkpoint");
 
         //get current time
         time_t timep;

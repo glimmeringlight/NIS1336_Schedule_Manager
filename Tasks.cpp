@@ -1,4 +1,5 @@
 #include "Tasks.h"
+#include <sys/fcntl.h>
 #include<time.h>
 #include<iostream>
 #include<sstream>
@@ -6,6 +7,7 @@
 #include<fstream>
 #include<string.h>
 #include<algorithm>
+#include<unistd.h>
 
 
 Priority convertToPriority(const string& priorityStr) {
@@ -89,7 +91,25 @@ void loadTask(vector<Task>& tasks, const User* user){
     tasks.clear(); 
 
     string user_name(user->username);
-    string filename = "./" + USER_DIR + user_name + ".txt" ;
+    string filename = USER_DIR + user_name + ".txt" ;
+
+    //begin lock
+    int fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    if(fd == -1){
+        FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
+        fclose(fp);
+    }
+    fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    
+    struct flock fl;
+    fl.l_type = F_WRLCK;
+    fl.l_whence = SEEK_SET;
+    fl.l_start = 0;
+    fl.l_len = 0;
+    fl.l_pid = getpid();
+
+    fcntl(fd, F_SETLKW, &fl);
+    //end lock
 
     ifstream file(filename);
     if (!file) {
@@ -156,6 +176,11 @@ void loadTask(vector<Task>& tasks, const User* user){
 
     file.close();
 
+    //release lock
+    fl.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &fl);
+    close(fd);
+
 }
 
 
@@ -163,6 +188,24 @@ void saveTask(const vector<Task>& tasks, const User* user){
 
     string user_name(user->username);
     string filename = USER_DIR + user_name + ".txt" ;
+
+    //begin lock
+    int fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    if(fd == -1){
+        FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
+        fclose(fp);
+    }
+    fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    
+    struct flock fl;
+    fl.l_type = F_WRLCK;
+    fl.l_whence = SEEK_SET;
+    fl.l_start = 0;
+    fl.l_len = 0;
+    fl.l_pid = getpid();
+
+    fcntl(fd, F_SETLKW, &fl);
+    //end lock
 
     ofstream file(filename);
     if (!file) {
@@ -181,7 +224,11 @@ void saveTask(const vector<Task>& tasks, const User* user){
     }
 
     file.close();
-    printf("Tasks saved successfully.\n");
+    //release lock
+    fl.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &fl);
+    close(fd);
+
 
 }
 

@@ -10,5 +10,5 @@ clean:
 	rm -f *.o 
 
 cli:
-	$(CXX) $(CXXFLAGS) -o bin/cli cli.cpp Account.cpp Tasks.cpp
+	$(CXX) $(CXXFLAGS) -g -o bin/cli cli.cpp Account.cpp Tasks.cpp
 

@@ -135,10 +135,8 @@ void addTask(int argc, char * argv[]){
     char* password = NULL;
     char* name = NULL;
 
-    char* prio = NULL;
-    char* cat = NULL;
-    strcpy(prio, "LOW");
-    strcpy(cat, "LIFE");
+    char* prio = (char*)"LOW";
+    char* cat = (char*)"LIFE";
 
     char* rem = NULL;
     char* detail = NULL;

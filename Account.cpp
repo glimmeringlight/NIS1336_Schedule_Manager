@@ -162,7 +162,7 @@ bool Account::registerUser(const char* input_username, const char* input_pwd)
     string user_file = USER_DIR + username + ".txt";
     ofstream ufile(user_file);
 
-    printf("Registration successful!\n");
+    // printf("Registration successful!\n");
 
 
     return true;
@@ -182,9 +182,9 @@ User Account::login(const char* input_username, const char* input_pwd)
     User user;
     user = isValid(username, hashpwd, filename);
     if ( user.id != 0 ) {
-        printf("Login successful!\n");
+        //printf("Login successful!\n");
     } else {
-        printf("Incorrect user name or password. Please check your input.\n");
+        //printf("Incorrect user name or password. Please check your input.\n");
     }
     return user;
 

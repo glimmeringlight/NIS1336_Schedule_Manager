@@ -1,4 +1,5 @@
 #include "Tasks.h"
+#include <sys/fcntl.h>
 #include<time.h>
 #include<iostream>
 #include<sstream>
@@ -6,6 +7,7 @@
 #include<fstream>
 #include<string.h>
 #include<algorithm>
+#include<unistd.h>
 
 
 Priority convertToPriority(const string& priorityStr) {
@@ -89,7 +91,25 @@ void loadTask(vector<Task>& tasks, const User* user){
     tasks.clear(); 
 
     string user_name(user->username);
-    string filename = "./" + USER_DIR + user_name + ".txt" ;
+    string filename = USER_DIR + user_name + ".txt" ;
+
+    //begin lock
+    int fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    if(fd == -1){
+        FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
+        fclose(fp);
+        fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    }
+    
+    struct flock fl;
+    fl.l_type = F_WRLCK;
+    fl.l_whence = SEEK_SET;
+    fl.l_start = 0;
+    fl.l_len = 0;
+    fl.l_pid = getpid();
+
+    fcntl(fd, F_SETLKW, &fl);
+    //end lock
 
     ifstream file(filename);
     if (!file) {
@@ -156,6 +176,11 @@ void loadTask(vector<Task>& tasks, const User* user){
 
     file.close();
 
+    //release lock
+    fl.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &fl);
+    close(fd);
+
 }
 
 
@@ -163,6 +188,24 @@ void saveTask(const vector<Task>& tasks, const User* user){
 
     string user_name(user->username);
     string filename = USER_DIR + user_name + ".txt" ;
+
+    //begin lock
+    int fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    if(fd == -1){
+        FILE* fp = fopen((USER_DIR + user_name).c_str(), "w");
+        fclose(fp);
+        fd = open((USER_DIR + user_name).c_str(), O_RDWR);
+    }
+    
+    struct flock fl;
+    fl.l_type = F_WRLCK;
+    fl.l_whence = SEEK_SET;
+    fl.l_start = 0;
+    fl.l_len = 0;
+    fl.l_pid = getpid();
+
+    fcntl(fd, F_SETLKW, &fl);
+    //end lock
 
     ofstream file(filename);
     if (!file) {
@@ -181,7 +224,11 @@ void saveTask(const vector<Task>& tasks, const User* user){
     }
 
     file.close();
-    printf("Tasks saved successfully.\n");
+    //release lock
+    fl.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &fl);
+    close(fd);
+
 
 }
 
@@ -201,4 +248,23 @@ void showTask(const vector<Task>& tasks) {
                convertPriorityToString(task.prio).c_str(), convertCategoryToString(task.cat).c_str(),
                convertTimeToString(task.rem).c_str(), task.detail);
     }
+}
+
+int getminId(vector<Task> tasks) {
+    int size = tasks.size();
+    if(size <=0) return 1;
+    for(int i=0;i<size;i++){
+        while(tasks[i].id>0&&tasks[i].id<size&&(i!=tasks[i].id)){
+            int t = tasks[i].id;
+            if(tasks[t].id==tasks[i].id) break;
+            int tmp = tasks[i].id;
+            tasks[i].id=tasks[t].id;
+            tasks[t].id = tmp;
+        }
+    }
+    for(int i =1;i<size;i++){
+        if(i!=tasks[i].id)return i;
+    }
+
+    return size+(tasks[0].id==(size));
 }

@@ -349,6 +349,7 @@ void delTask(int argc, char * argv[]){
         if((*it).id == id){
             tasklist.erase(it);
             flag = true;
+            break;  //if deleted, exit loop
         }
     }
 

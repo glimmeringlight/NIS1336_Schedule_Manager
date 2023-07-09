@@ -1,6 +1,7 @@
 #include"checkTask.h"
 #include"types.h"
 #include"Account.h"
+#include"thread1.h"
 
 
 int main(){
@@ -58,12 +59,12 @@ int main(){
     thread_arg.mutex = &mutex;
     thread_arg.user = &current_user;
 
-    // ret = pthread_create(&(tids[0]), NULL, thread1, &mutex);
+    ret = pthread_create(&(tids[0]), NULL, thread1, &thread_arg);
 
-    // if(ret){
-    //     printf("Create thread failed.\n");
-    //     exit(-1);
-    // }
+    if(ret){
+        printf("Create thread failed.\n");
+        exit(-1);
+    }
 
     ret = pthread_create(&(tids[1]), NULL, thread2, &thread_arg);
     if(ret){

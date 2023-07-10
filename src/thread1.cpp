@@ -55,12 +55,15 @@ void *thread1(void *thread_arg)
                     {
                         cout << "Please input task info:" << endl;
                         cout << "Format as below:" << endl;
-                        cout << "Task Name,Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
+                        cout << "Task Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                        loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
+                        // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
                         addTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // showTask(tasks);
+                        // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
+
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "Add task complete!" << endl;
                         cout << "-----------------------------------------------" << endl;
@@ -79,7 +82,7 @@ void *thread1(void *thread_arg)
                 }
                 if (command == "showtask")
                 {
-                    // 按开始时间排序
+                    // 按开始时间排序   ID重复的不会输出
                     pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
                     showTask(tasks);
                     pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
@@ -98,9 +101,11 @@ void *thread1(void *thread_arg)
                         cout << "Please input task id:" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                        loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
                         delTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
+
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "-----------------------------------------------" << endl;
 
@@ -168,18 +173,10 @@ void printHelp()
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
     istringstream iss(currentLine);
-    string name, prioStr, catStr, remStr, detail; // id, s_time自动生成
+    string name, sTimeStr, prioStr, catStr, remStr, detail; // id, s_time自动生成
 
     // id
-    int id;
-    if (tasks.empty())
-    {
-        id = 1; // start with 1
-    }
-    else
-    {
-        id = tasks.back().id + 1;
-    }
+    int id = getminId(tasks);
 
     // name
     if (getline(iss >> ws, name, ','))
@@ -189,8 +186,12 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
     }
 
     // s_time
-    time_t s_time = time(NULL);
-    // time_t s_time = convertToTime(sTimeStr);
+    time_t s_time;
+    getline(iss >> ws, sTimeStr, ',');
+    if (sTimeStr == "")
+        s_time = time(NULL);
+    else
+        s_time = convertToTime(sTimeStr);
 
     // prio
     Priority prio;
@@ -222,6 +223,9 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 
     // detail
     getline(iss >> ws, detail);
+    if (detail == "\n")
+        detail = "";
+    // cout << detail << endl;
 
     // new_task
     Task task;
@@ -231,11 +235,15 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
     task.prio = prio;
     task.cat = cat;
     task.rem = rem;
-    strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
+
+    if (detail == "")
+        strcpy(task.detail, "");
+    else
+        strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
 
     tasks.push_back(task);
 
-    saveSingleTask(tasks.back(), user);
+    saveSingleTask(task, user);
 }
 
 void saveSingleTask(const Task task, const User *user)
@@ -263,7 +271,7 @@ void saveSingleTask(const Task task, const User *user)
     file.close();
 }
 
-void addTask(vector<Task> tasks, const User *user)
+void addTask(vector<Task> &tasks, const User *user)
 {
     string currentLine;
     // Task currentTask;

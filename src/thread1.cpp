@@ -164,12 +164,25 @@ void printHelp()
     cout << "-----------------------------------------------" << endl;
 }
 
+bool checkTime(const string time)
+{
+    // 合法为true
+    // 正则表达式模式
+    string pattern = R"(^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$)";
+
+    // 创建正则表达式对象
+    regex regex(pattern);
+
+    // 使用正则表达式匹配字符串
+    return regex_match(time, regex);
+}
+
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
     istringstream iss(currentLine);
     string name, sTimeStr, prioStr, catStr, remStr, detail; // id, s_time自动生成
     Task task;
-    bool error = false;
+    bool NoError = false;
 
     // id
     int id = getminId(tasks);
@@ -184,10 +197,13 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         time_t s_time;
         if (getline(iss >> ws, sTimeStr, ','))
         {
-            // if (sTimeStr == "")
-            //    s_time = time(NULL);
-            // else
-            s_time = convertToTime(sTimeStr);
+            if (!checkTime(sTimeStr))
+            {
+                cout << "Invalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                return;
+            }
+            else
+                s_time = convertToTime(sTimeStr);
 
             // prio
             Priority prio;
@@ -205,8 +221,17 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
                     time_t rem;
                     if (getline(iss >> ws, remStr, ','))
                     {
-                        rem = convertToTime(remStr);
-                        if (rem >= s_time)
+                        if (remStr == "")
+                            rem = s_time;
+                        else if (!checkTime(remStr))
+                        {
+                            cout << "Invalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                            return;
+                        }
+                        else
+                            rem = convertToTime(remStr);
+
+                        if (rem > s_time)
                         {
                             cout << "Invalid remind time! Please check again" << endl;
                             cout << "-----------------------------------------------" << endl;
@@ -219,35 +244,33 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
                         {
                             if (detail == "\n" || detail == "")
                                 detail = "Default";
-                            // cout << detail << endl;
-
-                            // new_task
-                            // Task task;
-                            task.id = id;
-                            strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
-                            task.s_time = s_time;
-                            task.prio = prio;
-                            task.cat = cat;
-                            task.rem = rem;
-
-                            strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
-
-                            tasks.push_back(task);
-
-                            saveSingleTask(task, user);
-
-                            error = true;
                         }
+                        else
+                            detail = "Default";
+
+                        // new_task
+                        // Task task;
+                        task.id = id;
+                        strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
+                        task.s_time = s_time;
+                        task.prio = prio;
+                        task.cat = cat;
+                        task.rem = rem;
+
+                        strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
+
+                        tasks.push_back(task);
+
+                        saveSingleTask(task, user);
+
+                        NoError = true;
                     }
                 }
             }
         }
     }
-
-    if (error == false)
-    {
-        cout << "Input Error! Please check again!" << endl;
-    }
+    if (NoError == false)
+        cout << "Invalid Input! Please check again!" << endl;
 }
 
 void saveSingleTask(const Task task, const User *user)
@@ -327,4 +350,8 @@ void delTask(vector<Task> tasks, const User *user)
     // 重新写入
     saveTask(tasks, user);
     cout << "Delete task complete!" << endl;
+}
+
+void addTaskNew(vector<Task> &tasks, const User *user)
+{
 }

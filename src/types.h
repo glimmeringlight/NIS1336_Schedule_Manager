@@ -32,6 +32,7 @@ typedef struct{
 typedef struct{
     User* user;
     pthread_mutex_t* mutex;
+    bool running;
 }Thread_Arg;
 
 #endif

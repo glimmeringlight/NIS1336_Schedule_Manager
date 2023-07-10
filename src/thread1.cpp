@@ -5,13 +5,6 @@ using namespace std;
 
 void *thread1(void *thread_arg)
 {
-    // if (argc != 2)
-    // {
-    //     printf("ERROR: argv Missing argument!\n");
-    //     printHelp();
-    //     exit(-1);
-    // }
-
     string command;
     string clear = "\n";
     getline(cin, command); // 清空缓冲区
@@ -38,9 +31,9 @@ void *thread1(void *thread_arg)
             while (1)
             {
                 // 需要重新加载任务
-                pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
-                pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
+                // pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
+                // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                // pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
 
                 // getline(cin, clear);
                 getline(cin, command);
@@ -55,12 +48,15 @@ void *thread1(void *thread_arg)
                     {
                         cout << "Please input task info:" << endl;
                         cout << "Format as below:" << endl;
-                        cout << "Task Name,Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
+                        cout << "Task Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                        loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
+                        // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
                         addTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // showTask(tasks);
+                        // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
+
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "Add task complete!" << endl;
                         cout << "-----------------------------------------------" << endl;
@@ -79,7 +75,7 @@ void *thread1(void *thread_arg)
                 }
                 if (command == "showtask")
                 {
-                    // 按开始时间排序
+                    // 按开始时间排序   ID重复的不会输出
                     pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
                     showTask(tasks);
                     pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
@@ -98,9 +94,11 @@ void *thread1(void *thread_arg)
                         cout << "Please input task id:" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                        loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
                         delTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                        // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
+
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "-----------------------------------------------" << endl;
 
@@ -133,6 +131,7 @@ void *thread1(void *thread_arg)
                 {
                     stop = true;
                     cout << "User:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!" << endl;
+                    ((Thread_Arg *)thread_arg)->running = false;
                     break;
                 }
                 else
@@ -165,77 +164,113 @@ void printHelp()
     cout << "-----------------------------------------------" << endl;
 }
 
+bool checkTime(const string time)
+{
+    // 合法为true
+    // 正则表达式模式
+    string pattern = R"(^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$)";
+
+    // 创建正则表达式对象
+    regex regex(pattern);
+
+    // 使用正则表达式匹配字符串
+    return regex_match(time, regex);
+}
+
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
     istringstream iss(currentLine);
-    string name, prioStr, catStr, remStr, detail; // id, s_time自动生成
+    string name, sTimeStr, prioStr, catStr, remStr, detail; // id, s_time自动生成
+    Task task;
+    bool NoError = false;
 
     // id
-    int id;
-    if (tasks.empty())
-    {
-        id = 1; // start with 1
-    }
-    else
-    {
-        id = tasks.back().id + 1;
-    }
+    int id = getminId(tasks);
 
     // name
     if (getline(iss >> ws, name, ','))
     {
         if (name == "")
             name = "Default Name";
-    }
 
-    // s_time
-    time_t s_time = time(NULL);
-    // time_t s_time = convertToTime(sTimeStr);
-
-    // prio
-    Priority prio;
-    if (getline(iss >> ws, prioStr, ','))
-    {
-        prio = convertToPriority(prioStr);
-    }
-
-    // category
-    Category cat;
-    if (getline(iss >> ws, catStr, ','))
-    {
-        cat = convertToCategory(catStr);
-    }
-
-    // rem
-    time_t rem;
-    if (getline(iss >> ws, remStr, ','))
-    {
-        rem = convertToTime(remStr);
-        if (rem <= s_time)
+        // s_time
+        time_t s_time;
+        if (getline(iss >> ws, sTimeStr, ','))
         {
-            cout << "Invalid remind time! Please check again" << endl;
-            cout << "-----------------------------------------------" << endl;
+            if (!checkTime(sTimeStr))
+            {
+                cout << "Invalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                return;
+            }
+            else
+                s_time = convertToTime(sTimeStr);
 
-            return;
+            // prio
+            Priority prio;
+            if (getline(iss >> ws, prioStr, ','))
+            {
+                prio = convertToPriority(prioStr);
+
+                // category
+                Category cat;
+                if (getline(iss >> ws, catStr, ','))
+                {
+                    cat = convertToCategory(catStr);
+
+                    // rem
+                    time_t rem;
+                    if (getline(iss >> ws, remStr, ','))
+                    {
+                        if (remStr == "")
+                            rem = s_time;
+                        else if (!checkTime(remStr))
+                        {
+                            cout << "Invalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                            return;
+                        }
+                        else
+                            rem = convertToTime(remStr);
+
+                        if (rem > s_time)
+                        {
+                            cout << "Invalid remind time! Please check again" << endl;
+                            cout << "-----------------------------------------------" << endl;
+
+                            return;
+                        }
+
+                        // detail
+                        if (getline(iss >> ws, detail))
+                        {
+                            if (detail == "\n" || detail == "")
+                                detail = "Default";
+                        }
+                        else
+                            detail = "Default";
+
+                        // new_task
+                        // Task task;
+                        task.id = id;
+                        strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
+                        task.s_time = s_time;
+                        task.prio = prio;
+                        task.cat = cat;
+                        task.rem = rem;
+
+                        strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
+
+                        tasks.push_back(task);
+
+                        saveSingleTask(task, user);
+
+                        NoError = true;
+                    }
+                }
+            }
         }
     }
-
-    // detail
-    getline(iss >> ws, detail);
-
-    // new_task
-    Task task;
-    task.id = id;
-    strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
-    task.s_time = s_time;
-    task.prio = prio;
-    task.cat = cat;
-    task.rem = rem;
-    strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
-
-    tasks.push_back(task);
-
-    saveSingleTask(tasks.back(), user);
+    if (NoError == false)
+        cout << "Invalid Input! Please check again!" << endl;
 }
 
 void saveSingleTask(const Task task, const User *user)
@@ -263,7 +298,7 @@ void saveSingleTask(const Task task, const User *user)
     file.close();
 }
 
-void addTask(vector<Task> tasks, const User *user)
+void addTask(vector<Task> &tasks, const User *user)
 {
     string currentLine;
     // Task currentTask;
@@ -315,4 +350,8 @@ void delTask(vector<Task> tasks, const User *user)
     // 重新写入
     saveTask(tasks, user);
     cout << "Delete task complete!" << endl;
+}
+
+void addTaskNew(vector<Task> &tasks, const User *user)
+{
 }

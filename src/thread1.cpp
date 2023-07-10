@@ -131,7 +131,7 @@ void *thread1(void *thread_arg)
                 {
                     stop = true;
                     cout << "User:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!" << endl;
-                    ((Thread_Arg *)thread_arg)->running = true;
+                    ((Thread_Arg *)thread_arg)->running = false;
                     break;
                 }
                 else

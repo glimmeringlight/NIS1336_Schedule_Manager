@@ -11,7 +11,7 @@
 void *thread2(void * arg){
     printf("CheckTask begins!\n");
     int flag = 1;
-    int check_interval = 60;
+    int check_interval = 3;
     int i = 0;
 
     //get args
@@ -26,6 +26,10 @@ void *thread2(void * arg){
 
     //checktask
     while(1){
+        //need quit?
+        if(thread_arg_ptr->running == false){
+            return NULL;
+        }
         //read tasklist
         pthread_mutex_lock(mutex);
         loadTask(tasklist, user);

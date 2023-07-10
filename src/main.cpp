@@ -58,6 +58,7 @@ int main(){
     int ret;
     thread_arg.mutex = &mutex;
     thread_arg.user = &current_user;
+    thread_arg.running = true;
 
     ret = pthread_create(&(tids[0]), NULL, thread1, &thread_arg);
 

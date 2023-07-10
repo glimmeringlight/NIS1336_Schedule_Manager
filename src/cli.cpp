@@ -6,6 +6,7 @@
 #include<sstream>
 #include<iomanip>
 #include<unistd.h>
+#include<iostream>
 #include "Tasks.h"
 
 void showTask(int argc, char * argv[]);
@@ -289,6 +290,18 @@ void addTask(int argc, char * argv[]){
 
     new_task.rem = mktime(&r_time_tm);
     new_task.s_time = mktime(&s_time_tm);
+
+    time_t current_time;
+    time(&current_time);
+    if(current_time > new_task.rem || current_time > new_task.s_time){
+        printf("Invalid time.\n");
+        exit(-1);
+    }
+
+    if(new_task.rem > new_task.s_time){
+        printf("Remind time cannot be earlier than start time.\n");
+        exit(-1);
+    }
 
     //add new elements
     tasklist.push_back(new_task);

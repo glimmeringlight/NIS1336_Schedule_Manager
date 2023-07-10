@@ -52,7 +52,7 @@ int main(){
 
 
     //互斥锁，用于互斥地访问
-	pthread_mutex_t mutex;
+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
     pthread_t tids[2];
     int ret;

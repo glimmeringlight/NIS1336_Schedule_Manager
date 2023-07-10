@@ -184,10 +184,10 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         time_t s_time;
         if (getline(iss >> ws, sTimeStr, ','))
         {
-            if (sTimeStr == "")
-                s_time = time(NULL);
-            else
-                s_time = convertToTime(sTimeStr);
+            // if (sTimeStr == "")
+            //    s_time = time(NULL);
+            // else
+            s_time = convertToTime(sTimeStr);
 
             // prio
             Priority prio;

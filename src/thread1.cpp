@@ -206,7 +206,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
                     if (getline(iss >> ws, remStr, ','))
                     {
                         rem = convertToTime(remStr);
-                        if (rem <= s_time)
+                        if (rem >= s_time)
                         {
                             cout << "Invalid remind time! Please check again" << endl;
                             cout << "-----------------------------------------------" << endl;

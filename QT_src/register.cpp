@@ -26,7 +26,7 @@ void Register::on_pushButton_clicked()
     QStringList command;
     command << "reg" << "-u" << username << "-p" << password;
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){

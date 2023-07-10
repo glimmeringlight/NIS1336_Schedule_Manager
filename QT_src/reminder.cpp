@@ -19,7 +19,7 @@ reminder::reminder(QString user, QString pwd, QWidget *parent) :
     QStringList command;
     command << "check" << "-u" << username << "-p" << password;
 
-    process->start("./bin/cli", command);
+    process->start("./cli", command);
 }
 
 reminder::~reminder()

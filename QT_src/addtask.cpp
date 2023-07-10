@@ -77,7 +77,7 @@ void Addtask::on_pushButton_clicked()
     command << "add" << "-u" << username << "-p" << password << "-n" << name << "-o" << priority << "-c" << category << "-r" <<rem_time << "-d" << detail << "-s" << start_time;
 
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){

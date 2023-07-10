@@ -24,7 +24,7 @@ User::User(QString user, QString pwd, QWidget *parent) :
 
 //    process -> setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-//    QString cmd = "./bin/cli check -u ";
+//    QString cmd = "./cli check -u ";
 //    cmd += username;
 //    cmd += " -p ";
 //    cmd += password;
@@ -42,7 +42,7 @@ User::User(QString user, QString pwd, QWidget *parent) :
     QStringList command;
     command << "show" << "-u" << username << "-p" << password;
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){
 
@@ -74,7 +74,7 @@ void User::Reminder()
     m_proces_bash->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     QStringList command;
     command << "check" << "-u" << username << "-p" << password;
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){
 
@@ -105,7 +105,7 @@ void User::Refresh()
     QStringList command;
     command << "show" << "-u" << username << "-p" << password;
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){
 

@@ -25,7 +25,7 @@ void DeleteTask::on_pushButton_clicked()
     QStringList command;
     command << "del" << "-u" << username << "-p" << password << "-i" << id;
 
-    process->start("./bin/cli", command);
+    process->start("./cli", command);
 
     if (process->waitForStarted() && process->waitForFinished()){
 

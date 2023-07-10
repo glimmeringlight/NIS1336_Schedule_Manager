@@ -32,7 +32,7 @@ void Changepwd::on_commit_clicked()
     QStringList command;
     command << "passwd" << "-u" << username << "-p" << oldpassword << "-n" << newpassword;
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){

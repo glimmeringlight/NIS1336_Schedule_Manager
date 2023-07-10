@@ -28,7 +28,7 @@ void Login::on_login_clicked()
     QStringList command;
     command << "login" << "-u" << username << "-p" << password;
 
-    m_proces_bash->start("./bin/cli", command);
+    m_proces_bash->start("./cli", command);
 
 
     if (m_proces_bash->waitForStarted() && m_proces_bash->waitForFinished()){

@@ -5,13 +5,6 @@ using namespace std;
 
 void *thread1(void *thread_arg)
 {
-    // if (argc != 2)
-    // {
-    //     printf("ERROR: argv Missing argument!\n");
-    //     printHelp();
-    //     exit(-1);
-    // }
-
     string command;
     string clear = "\n";
     getline(cin, command); // 清空缓冲区
@@ -38,9 +31,9 @@ void *thread1(void *thread_arg)
             while (1)
             {
                 // 需要重新加载任务
-                pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
-                loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
-                pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
+                // pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
+                // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                // pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
 
                 // getline(cin, clear);
                 getline(cin, command);
@@ -138,6 +131,7 @@ void *thread1(void *thread_arg)
                 {
                     stop = true;
                     cout << "User:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!" << endl;
+                    ((Thread_Arg *)thread_arg)->running = true;
                     break;
                 }
                 else
@@ -174,6 +168,8 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
     istringstream iss(currentLine);
     string name, sTimeStr, prioStr, catStr, remStr, detail; // id, s_time自动生成
+    Task task;
+    bool error = false;
 
     // id
     int id = getminId(tasks);
@@ -183,67 +179,75 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
     {
         if (name == "")
             name = "Default Name";
-    }
 
-    // s_time
-    time_t s_time;
-    getline(iss >> ws, sTimeStr, ',');
-    if (sTimeStr == "")
-        s_time = time(NULL);
-    else
-        s_time = convertToTime(sTimeStr);
-
-    // prio
-    Priority prio;
-    if (getline(iss >> ws, prioStr, ','))
-    {
-        prio = convertToPriority(prioStr);
-    }
-
-    // category
-    Category cat;
-    if (getline(iss >> ws, catStr, ','))
-    {
-        cat = convertToCategory(catStr);
-    }
-
-    // rem
-    time_t rem;
-    if (getline(iss >> ws, remStr, ','))
-    {
-        rem = convertToTime(remStr);
-        if (rem <= s_time)
+        // s_time
+        time_t s_time;
+        if (getline(iss >> ws, sTimeStr, ','))
         {
-            cout << "Invalid remind time! Please check again" << endl;
-            cout << "-----------------------------------------------" << endl;
+            if (sTimeStr == "")
+                s_time = time(NULL);
+            else
+                s_time = convertToTime(sTimeStr);
 
-            return;
+            // prio
+            Priority prio;
+            if (getline(iss >> ws, prioStr, ','))
+            {
+                prio = convertToPriority(prioStr);
+
+                // category
+                Category cat;
+                if (getline(iss >> ws, catStr, ','))
+                {
+                    cat = convertToCategory(catStr);
+
+                    // rem
+                    time_t rem;
+                    if (getline(iss >> ws, remStr, ','))
+                    {
+                        rem = convertToTime(remStr);
+                        if (rem <= s_time)
+                        {
+                            cout << "Invalid remind time! Please check again" << endl;
+                            cout << "-----------------------------------------------" << endl;
+
+                            return;
+                        }
+
+                        // detail
+                        if (getline(iss >> ws, detail))
+                        {
+                            if (detail == "\n" || detail == "")
+                                detail = "Default";
+                            // cout << detail << endl;
+
+                            // new_task
+                            // Task task;
+                            task.id = id;
+                            strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
+                            task.s_time = s_time;
+                            task.prio = prio;
+                            task.cat = cat;
+                            task.rem = rem;
+
+                            strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
+
+                            tasks.push_back(task);
+
+                            saveSingleTask(task, user);
+
+                            error = true;
+                        }
+                    }
+                }
+            }
         }
     }
 
-    // detail
-    getline(iss >> ws, detail);
-    if (detail == "\n")
-        detail = "";
-    // cout << detail << endl;
-
-    // new_task
-    Task task;
-    task.id = id;
-    strncpy(task.name, name.c_str(), sizeof(task.name) - 1);
-    task.s_time = s_time;
-    task.prio = prio;
-    task.cat = cat;
-    task.rem = rem;
-
-    if (detail == "")
-        strcpy(task.detail, "");
-    else
-        strncpy(task.detail, detail.c_str(), sizeof(task.detail) - 1);
-
-    tasks.push_back(task);
-
-    saveSingleTask(task, user);
+    if (error == false)
+    {
+        cout << "Input Error! Please check again!" << endl;
+    }
 }
 
 void saveSingleTask(const Task task, const User *user)

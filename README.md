@@ -1,100 +1,57 @@
-# NIS1336_Schedule_Manager
+<p align="center">
+    <h1 align="center">NIS1336_Schedule_Manager</h1>
+</p>
+<p align="center">
+    日程管理软件
+</p>
 
-### `Account.cpp`中实现对账号的注册、登录、修改密码的功能
+## 项目功能
 
-```
-Account account("filename.txt");
-```
-
-此命令会创建一个`Account`类对象，并在该目录下新建一个文件（如果没有的话）`filename.txt`，用于保存用户名及密码。
-
-示例：
-
-```
-Account account(USER_PWD.txt);
-```
-
-**1.账号注册**
-
-```
-bool registerUser(const char* username, const char* password);
-```
-
-注册成功则返回`True`，注册过程中会检查用户名是否已经存在。如果该用户名可用，注册过程中会在`USER`文件夹中新建文件`username.txt`。
-
-示例：
-
-```
-registerUser("Alice","12345678");
-```
-
-`USER_PWD.txt`中的保存形式：
-
-```
-1.Alice,8c5b90a33a04dca5
-```
+- [x] 支持多用户注册、登录以及密码修改
+- [x] 支持用户增加、删除任务
+- [x] 支持用户设置任务提醒时间，并且按时提醒
+- [x] 支持命令行、shell循环、图形界面三种交互方式
 
 
 
+## 源代码结构说明
 
+`QT_src`下包含图形界面（QT）的源代码，需要使用`qmake`编译。
 
+`src`下包含项目的核心功能代码，包括文件接口函数、命令行交互、周期性检查。
 
-**2.登录**
+`scripts`下包含供测试用的shell脚本。
 
-```
-int login(const char* username, const char* password, User* user);
+`bin`目录中包含编译后的可执行的二进制文件。
+
+## 项目编译
+
+在项目根目录下执行：`make main`用户编译命令行交互界面，`make cli`用户编译命令行接口供用户或图形界面调用，`make all`同时编译上述两者。编译得到的二进制文件存放在`bin`目录下。
+
+## 使用该项目
+
+首先切换到`bin`目录：
+
+```bash
+cd ./bin/
 ```
 
-返回的`int`值为`USER_PWD.txt`中的用户编号，如果登陆失败返回`0`。`user`中记录了登录成功的用户信息。
+而后，运行命令行交互界面：
 
-
-**3.修改密码**
-```
-bool changePassword(const char* username, const char* password, const char* newpassword);
-```
-若密码修改成功则返回`true`。
-
-
-
-
-
-### `Tasks.cpp`中实现任务的加载、保存和打印的功能
-
-**1.任务加载**
-```
-void loadTask(vector<Task>& tasks, const User* user);
+```bash
+./main
 ```
 
-**2.任务保存**
-```
-void saveTask(const vector<Task>& tasks, const User* user);
-```
+图形界面：
 
-注：`s_time`和`rem`在`username.txt`中保存的格式为`YYYY-MM-DD HH:MM:SS`
-
-示例`USER/Alice.txt`：
-```
-1,Study,2023-07-05 21:47:00,LOW,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Study!
-2,Play,2023-07-03 21:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Play!
-3,Play,2023-07-04 21:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Play!
-4,Run,2023-07-04 23:47:00,HIGH,ENTERTAINMENT,2023-07-05 00:00:00,GO TO Run!
+```bash
+./Schedule
 ```
 
+命令行接口：
 
-
-
-**3.任务打印**
-```
-void showTask(const vector<Task>& tasks);
-```
-
-输出示例（按`Start Time`从小到大排序）：
-```
-ID	Task Name   Start Time              Priority    Category        Remind Time             Details
- 2	Play        2023-07-03 21:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Play!
- 3	Play        2023-07-04 21:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Play!
- 4	Run         2023-07-04 23:47:00     HIGH        ENTERTAINMENT   2023-07-05 00:00:00     GO TO Run!
- 1	Study       2023-07-05 21:47:00     LOW         ENTERTAINMENT   2023-07-05 00:00:00     GO TO Study!
+```bash
+./cli help
 ```
 
 

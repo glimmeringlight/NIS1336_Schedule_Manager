@@ -276,7 +276,11 @@ void addTask(int argc, char * argv[]){
     new_task.cat = n_cat;
 
     //check detail
-    strcpy(new_task.detail, detail);
+    if(detail){
+    	strcpy(new_task.detail, detail);
+    }else{
+    	strcpy(new_task.detail, "No detail");
+    }
 
     //checktime
     if(rem == NULL || st == NULL){

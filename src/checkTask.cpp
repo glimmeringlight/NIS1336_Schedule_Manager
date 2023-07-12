@@ -49,9 +49,9 @@ void *thread2(void * arg){
             if(task_time->tm_mon != current_time->tm_mon) continue;
             if(task_time->tm_mday != current_time->tm_mday) continue;
             // day match if here
-            difft = difftime(tasklist[i].rem, timep);
+            // difft = difftime(tasklist[i].rem, timep);
 
-            if(difft > 0 && difft < 5*60){
+            if(tasklist[i].rem < timep && timep < tasklist[i].s_time){
                 std::cout << "Arrving task " << tasklist[i].id << ", " << tasklist[i].name << " : " << tasklist[i].detail << ". " << std::endl;
             }
 

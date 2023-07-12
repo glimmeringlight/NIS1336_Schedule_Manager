@@ -121,7 +121,7 @@ void showTask(int argc, char * argv[]){
 
     User user = account.login(username, password);
     if(user.id == 0){
-        printf("User auth failed!\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }
 
@@ -200,7 +200,7 @@ void addTask(int argc, char * argv[]){
 
     User user = account.login(username, password);
     if(user.id == 0){
-        printf("User auth failed!\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }
 
@@ -355,9 +355,6 @@ void altTask(int argc, char * argv[]){
     char* c_rem = NULL;
     char* c_stime = NULL;
 
-
-
-
     char optret;
     
     while((optret = getopt(argc, argv, "u:p:i:n:o:c:r:d:s:"))!=-1){
@@ -412,7 +409,7 @@ void altTask(int argc, char * argv[]){
 
     User user = account.login(username, password);
     if(user.id == 0){
-        printf("User auth failed!\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }
 
@@ -512,7 +509,7 @@ void altTask(int argc, char * argv[]){
     }
 
     for(auto it = tasklist.begin(); it != tasklist.end();++it){
-        if(it->id == id) continue;
+        if( it->id == id ) continue;
         if(it->s_time == stime){
             printf("This start time is occupied!\n");
             exit(-1);
@@ -523,6 +520,7 @@ void altTask(int argc, char * argv[]){
     target_it->s_time = stime;
 
     saveTask(tasklist, &user);
+    printf("Task %d is successfully modified\n", id );
 
 
 }
@@ -563,7 +561,7 @@ void delTask(int argc, char * argv[]){
     User user = account.login(username, password);
 
     if(user.id == 0){
-        printf("User auth failed.\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }
 
@@ -617,7 +615,7 @@ void userLogin(int argc, char* argv[]){
     User user = account.login(username, password);
 
     if(user.id == 0){
-        printf("User auth failed!\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }else{
         printf("Successfully loged in as %s.\n", user.username);
@@ -729,7 +727,7 @@ void checkTask(int argc, char* argv[]){
     User user = account.login(username, password);
 
     if(user.id == 0){
-        printf("User auth failed!\n");
+        printf("Incorrect user name or password. Please check your input.\n");
         exit(-1);
     }
 

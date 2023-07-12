@@ -17,6 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     addtask.cpp \
+    alt_help.cpp \
+    alttask.cpp \
     changepwd.cpp \
     deletetask.cpp \
     login.cpp \
@@ -29,6 +31,8 @@ SOURCES += \
 HEADERS += \
     Head.h \
     addtask.h \
+    alt_help.h \
+    alttask.h \
     changepwd.h \
     deletetask.h \
     login.h \
@@ -39,6 +43,8 @@ HEADERS += \
 
 FORMS += \
     addtask.ui \
+    alt_help.ui \
+    alttask.ui \
     changepwd.ui \
     deletetask.ui \
     login.ui \

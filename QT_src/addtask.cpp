@@ -19,36 +19,23 @@ Addtask::~Addtask()
 
 QString convert(const QString& inputDateTime) {
 
-    QDateTime dateTime = QDateTime::fromString(inputDateTime, "yyyy/M/d hh:mm");
+    QDateTime dateTime = QDateTime::fromString(inputDateTime, "yyyy/MM/dd hh:mm:ss");
     if (!dateTime.isValid()) {
-        dateTime = QDateTime::fromString(inputDateTime, "yyyy/MM/dd hh:mm");
+        dateTime = QDateTime::fromString(inputDateTime, "yyyy/MM/dd hh:mm:ss");
     }
     if (!dateTime.isValid()) {
-        dateTime = QDateTime::fromString(inputDateTime, "yyyy/M/dd hh:mm");
+        dateTime = QDateTime::fromString(inputDateTime, "yyyy/M/dd hh:mm:ss");
     }
     if (!dateTime.isValid()) {
-        dateTime = QDateTime::fromString(inputDateTime, "yyyy/MM/d hh:mm");
+        dateTime = QDateTime::fromString(inputDateTime, "yyyy/MM/d hh:mm:ss");
     }
-
     if (dateTime.isValid()) {
-        QString outputDateTime = dateTime.toString("yyyy-MM-dd,HH:mm");
+        QString outputDateTime = dateTime.toString("yyyy-MM-dd,HH:mm:ss");
         return outputDateTime;
     } else {
         return QString();
     }
 }
-
-QString Spaces(const QString& inputString) {
-    QString outputString;
-    for (int i = 0; i < inputString.size(); i++) {
-        if (inputString.at(i) == ' ') {
-            outputString += "\\";
-        }
-        outputString += inputString.at(i);
-    }
-    return outputString;
-}
-
 
 
 void Addtask::on_pushButton_clicked()
@@ -66,16 +53,15 @@ void Addtask::on_pushButton_clicked()
     QString rem_time_raw = ui->rtime->text();
     QString rem_time = convert(rem_time_raw);
 
+
     QString priority = ui -> prio -> currentText();
     QString category = ui -> cat -> currentText();
 
-    QString detail_raw = ui -> det -> text();
-    QString detail = "\"" + detail_raw + "\"";
-    if( detail_raw == "" ) detail = " \" No detail.\" ";
+    QString detail = ui -> det -> text();
+    if( detail == "" ) detail = "No detail.";
 
     QStringList command;
     command << "add" << "-u" << username << "-p" << password << "-n" << name << "-o" << priority << "-c" << category << "-r" <<rem_time << "-d" << detail << "-s" << start_time;
-
 
     m_proces_bash->start("./cli", command);
 
@@ -87,18 +73,9 @@ void Addtask::on_pushButton_clicked()
         ui -> result -> setText(outputString);
         emit taskAdded();
 
-
-//        QString outputString(output);
-//        QString formattedText = "<pre>" + outputString + "</pre>";
-//        ui->result->setHtml(formattedText);
-
-
-
-
     }
     else
     {
-        // 处理启动失败或执行超时的情况
         ui -> result -> setText("Fail to connect.");
     }
 

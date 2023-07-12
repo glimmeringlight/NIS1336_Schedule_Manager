@@ -247,7 +247,7 @@ bool Account::changePassword(const char* username, const char* oldpassword, cons
     remove(filename.c_str());
     rename("temp.txt", filename.c_str());
 
-    printf("Password change successful!\n");
+    // printf("Password change successful!\n");
 
     return true;
 

@@ -7,6 +7,7 @@
 #include "deletetask.h"
 #include "widget.h"
 #include "reminder.h"
+#include "alttask.h"
 
 
 namespace Ui {
@@ -34,6 +35,8 @@ private slots:
 
 
     void on_pushButton_clicked();
+
+    void on_modify_clicked();
 
 private:
     Ui::User *ui;

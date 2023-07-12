@@ -189,12 +189,12 @@
      <minute>0</minute>
      <second>0</second>
      <year>2023</year>
-     <month>1</month>
-     <day>1</day>
+     <month>7</month>
+     <day>13</day>
     </datetime>
    </property>
    <property name="displayFormat">
-    <string>yyyy/M/d hh:mm</string>
+    <string>yyyy/MM/dd hh:mm:ss</string>
    </property>
   </widget>
   <widget class="QDateTimeEdit" name="rtime">
@@ -217,12 +217,12 @@
      <minute>0</minute>
      <second>0</second>
      <year>2023</year>
-     <month>1</month>
-     <day>1</day>
+     <month>7</month>
+     <day>13</day>
     </datetime>
    </property>
    <property name="displayFormat">
-    <string>yyyy/M/d hh:mm</string>
+    <string>yyyy/MM/dd hh:mm:ss</string>
    </property>
   </widget>
   <widget class="QComboBox" name="prio">

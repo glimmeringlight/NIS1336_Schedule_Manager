@@ -11,6 +11,9 @@ User::User(QString user, QString pwd, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QFont font("Courier New");
+    ui->task_list->setFont(font);
+    ui->remind->setFont(font);
 
 //    ui -> remind -> setText("Now you have no task to do.");
 
@@ -20,17 +23,6 @@ User::User(QString user, QString pwd, QWidget *parent) :
     timer->setInterval(3000);
     timer->start();
 
-//    connect(process, &QProcess::readyReadStandardOutput, this, &User::Reminder);
-
-//    process -> setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-
-//    QString cmd = "./cli check -u ";
-//    cmd += username;
-//    cmd += " -p ";
-//    cmd += password;
-//    cmd += " \n";
-
-//    process -> start(cmd);
 
     // task list
     QProcess* m_proces_bash = new QProcess;
@@ -148,4 +140,11 @@ void User::on_pushButton_clicked()
 {
     reminder *remind = new reminder(username,password);
     remind -> show();
+}
+
+void User::on_modify_clicked()
+{
+    Alttask *alt = new Alttask(username,password);
+    connect(alt, &Alttask::taskAlted, this, &User::Refresh);
+    alt -> show();
 }

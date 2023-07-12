@@ -512,6 +512,7 @@ void altTask(int argc, char * argv[]){
     }
 
     for(auto it = tasklist.begin(); it != tasklist.end();++it){
+        if(it->id == id) continue;
         if(it->s_time == stime){
             printf("This start time is occupied!\n");
             exit(-1);

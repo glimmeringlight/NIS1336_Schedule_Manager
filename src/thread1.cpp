@@ -84,6 +84,16 @@ void *thread1(void *thread_arg)
 
                     continue;
                 }
+                if (command == "searchtask")
+                {
+                    pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
+                    searchTask(tasks);
+                    pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
+
+                    cout << "-----------------------------------------------" << endl;
+
+                    continue;
+                }
                 if (command == "deltask")
                 {
                     bool over = false;
@@ -157,10 +167,13 @@ void printHelp()
     cout << "Options:\n";
     cout << "    run         Begin polling user tasks\n";
     cout << "When polling begin:\n";
-    cout << "    addTask     show all info with the sort of id (smallest id comes first)\n";
-    cout << "    showTask    show the info of the student with the highest socre\n";
-    cout << "    delTask     show average score\n";
+    cout << "    addTask     Add tasks\n";
+    cout << "    showTask    Show all task (earliest start time comes first)\n";
+    cout << "    delTask     Delete tasks\n";
+    cout << "    saveTask    Save tasks to local file\n";
+    cout << "    searchTask  Search tasks with same feature\n";
     cout << "    help        Show this help message\n";
+    cout << "    quit        Current user quit\n";
     cout << "-----------------------------------------------" << endl;
 }
 
@@ -174,6 +187,30 @@ bool checkTime(const string time)
     regex regex(pattern);
 
     // 使用正则表达式匹配字符串
+    return regex_match(time, regex);
+}
+
+bool checkDay(const string time)
+{
+    // 合法为true
+    string pattern = R"(^\d{4}-\d{2}-\d{2}$)";
+    regex regex(pattern);
+    return regex_match(time, regex);
+}
+
+bool checkMonth(const string time)
+{
+    // 合法为true
+    string pattern = R"(^\d{4}-\d{2}$)";
+    regex regex(pattern);
+    return regex_match(time, regex);
+}
+
+bool checkYear(const string time)
+{
+    // 合法为true
+    string pattern = R"(^\d{4}$)";
+    regex regex(pattern);
     return regex_match(time, regex);
 }
 
@@ -352,6 +389,214 @@ void delTask(vector<Task> tasks, const User *user)
     cout << "Delete task complete!" << endl;
 }
 
-void addTaskNew(vector<Task> &tasks, const User *user)
+void searchTask(const vector<Task> &tasks)
 {
+    searchTaskHelp();
+    int type;
+    cin >> type;
+    cin.get();
+
+    switch (type)
+    {
+    case 1:
+    {
+        cout << "Please input the priority you want to search: (HIGH, MODERATE, LOW)\n";
+        string prioStr;
+        getline(cin, prioStr);
+        transform(prioStr.begin(), prioStr.end(), prioStr.begin(), ::toupper);
+
+        searchTaskPrio(tasks, prioStr);
+        break;
+    }
+
+    case 2:
+    {
+        cout << "Please input the category you want to search: (STUDY, LIFE, ENTERTAINMENT)\n";
+        string catStr;
+        getline(cin, catStr);
+        transform(catStr.begin(), catStr.end(), catStr.begin(), ::toupper);
+
+        searchTaskCat(tasks, catStr);
+        break;
+    }
+    case 3:
+    {
+        cout << "Please input the date(YYYY-MM-DD) you want to search:\n";
+        string dateStr;
+        getline(cin, dateStr);
+
+        if (!checkDay(dateStr))
+        {
+            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+            return;
+        }
+
+        searchTaskDay(tasks, dateStr);
+        break;
+    }
+    case 4:
+    {
+        cout << "Please input the month(YYYY-MM) you want to search:\n";
+        string dateStr;
+        getline(cin, dateStr);
+
+        if (!checkMonth(dateStr))
+        {
+            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+            return;
+        }
+
+        searchTaskMonth(tasks, dateStr);
+        break;
+    }
+    case 5:
+    {
+        cout << "Please input the year(YYYY) you want to search:\n";
+        string dateStr;
+        getline(cin, dateStr);
+
+        if (!checkYear(dateStr))
+        {
+            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+            return;
+        }
+
+        searchTaskYear(tasks, dateStr);
+        break;
+    }
+    default:
+    {
+        cout << "Unknown type! Please check again!\n";
+    }
+    }
+
+    // cout << "Search task complete!\n";
+}
+
+void showSingleTask(const Task &task)
+{
+    printf("%2d\t%-12s%-24s%-12s%-16s%-24s%s\n", task.id, task.name, convertTimeToString(task.s_time).c_str(),
+           convertPriorityToString(task.prio).c_str(), convertCategoryToString(task.cat).c_str(),
+           convertTimeToString(task.rem).c_str(), task.detail);
+}
+
+void searchTaskPrio(const vector<Task> &tasks, const string prioStr)
+{
+    Priority prio = convertToPriority(prioStr);
+    cout << "Tasks with priority " << prioStr << ":" << endl;
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+    bool noMatch = true;
+
+    for (const Task &task : tasks)
+    {
+        if (task.prio == prio)
+        {
+            showSingleTask(task);
+            noMatch = false;
+        }
+    }
+
+    if (noMatch)
+    {
+        cout << "Tasks with priority " << prioStr << " not found!" << endl;
+    }
+}
+
+void searchTaskCat(const vector<Task> &tasks, const string catStr)
+{
+    Category cat = convertToCategory(catStr);
+    cout << "Tasks with category " << catStr << ":" << endl;
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+    bool noMatch = true;
+
+    for (const Task &task : tasks)
+    {
+        if (task.cat == cat)
+        {
+            showSingleTask(task);
+            noMatch = false;
+        }
+    }
+
+    if (noMatch)
+    {
+        cout << "Tasks with category " << catStr << " not found!" << endl;
+    }
+}
+
+void searchTaskDay(const vector<Task> &tasks, const string dateStr)
+{
+    cout << "Tasks with date " << dateStr << ":" << endl;
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+    bool noMatch = true;
+
+    for (const Task &task : tasks)
+    {
+        string currentDate = convertTimeToString(task.s_time).substr(0, 10);
+        if (currentDate == dateStr)
+        {
+            showSingleTask(task);
+            noMatch = false;
+        }
+    }
+
+    if (noMatch)
+    {
+        cout << "Tasks with date " << dateStr << " not found!" << endl;
+    }
+}
+
+void searchTaskMonth(const vector<Task> &tasks, const string dateStr)
+{
+    cout << "Tasks with month " << dateStr << ":" << endl;
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+    bool noMatch = true;
+
+    for (const Task &task : tasks)
+    {
+        string currentDate = convertTimeToString(task.s_time).substr(0, 7);
+        if (currentDate == dateStr)
+        {
+            showSingleTask(task);
+            noMatch = false;
+        }
+    }
+
+    if (noMatch)
+    {
+        cout << "Tasks with month " << dateStr << " not found!" << endl;
+    }
+}
+
+void searchTaskYear(const vector<Task> &tasks, const string dateStr)
+{
+    cout << "Tasks with year " << dateStr << ":" << endl;
+    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
+    bool noMatch = true;
+
+    for (const Task &task : tasks)
+    {
+        string currentDate = convertTimeToString(task.s_time).substr(0, 4);
+        if (currentDate == dateStr)
+        {
+            showSingleTask(task);
+            noMatch = false;
+        }
+    }
+
+    if (noMatch)
+    {
+        cout << "Tasks with year " << dateStr << " not found!" << endl;
+    }
+}
+
+void searchTaskHelp()
+{
+    cout << "Please choose the type of task showing:" << endl;
+    cout << "1:\tSearch tasks with the same Priority (Default: LOW)\n";
+    cout << "2:\tSearch tasks with the same Category (Default: STUDY)\n";
+    cout << "3:\tSearch tasks that start at the same day\n";
+    cout << "4:\tSearch tasks that start at the same month\n";
+    cout << "5:\tSearch tasks that start at the same year\n";
+    cout << "-----------------------------------------------" << endl;
 }

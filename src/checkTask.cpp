@@ -11,7 +11,7 @@
 void *thread2(void * arg){
     printf("CheckTask begins!\n");
     int flag = 1;
-    int check_interval = 3;
+    int check_interval = 5;
     int i = 0;
 
     //get args
@@ -52,7 +52,7 @@ void *thread2(void * arg){
             // difft = difftime(tasklist[i].rem, timep);
 
             if(tasklist[i].rem < timep && timep < tasklist[i].s_time){
-                std::cout << "Arrving task " << tasklist[i].id << ", " << tasklist[i].name << " : " << tasklist[i].detail << ". " << std::endl;
+                std::cout << "\033[31mArrving task " << tasklist[i].id << ", " << tasklist[i].name << " : " << tasklist[i].detail << ". \033[0m" << std::endl;
             }
 
         }

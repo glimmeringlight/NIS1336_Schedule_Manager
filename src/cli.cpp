@@ -309,7 +309,7 @@ void addTask(int argc, char * argv[]){
 
     time_t current_time;
     time(&current_time);
-    if(current_time > new_task.rem || current_time > new_task.s_time){
+    if(current_time > new_task.s_time){
         printf("Invalid time.\n");
         exit(-1);
     }
@@ -755,7 +755,7 @@ void checkTask(int argc, char* argv[]){
         // day match if here
         // difft = difftime(tasklist[i].rem, timep);
 
-        if(tasklist[i].rem < timep && timep < tasklist[i].s_time){
+        if(timep > tasklist[i].rem && timep < tasklist[i].s_time){
             printf("Task %d %s is arriving: %s.\n", 
             tasklist[i].id, tasklist[i].name, tasklist[i].detail);
         }

@@ -49,7 +49,7 @@ void *thread1(void *thread_arg)
                     {
                         cout << "\033[32mPlease input task info:\033[0m" << endl;
                         cout << "\033[32mFormat as below:\033[0m" << endl;
-                        cout << "\033[32mTask Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details\033[0m" << endl;
+                        cout << "\033[32mTask Name,Start Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details\033[0m" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
 
@@ -332,7 +332,7 @@ string taskToString(Task task)
     return oss.str();
 }
 
-void delTask(vector<Task> tasks, const User *user)
+void delTask(vector<Task> &tasks, const User *user)
 {
     // string taskLine;
     // Task currentTask;

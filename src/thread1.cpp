@@ -133,6 +133,15 @@ void *thread1(void *thread_arg)
 
                     continue;
                 }
+                if (command == "edittask")
+                {
+                    pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
+                    editTask(tasks, ((Thread_Arg *)thread_arg)->user);
+                    pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
+                    cout << "-----------------------------------------------" << endl;
+
+                    continue;
+                }
                 if (command == "help")
                 {
                     printHelp();
@@ -173,6 +182,7 @@ void printHelp()
     cout << "    delTask     Delete tasks\n";
     cout << "    saveTask    Save tasks to local file\n";
     cout << "    searchTask  Search tasks with same feature\n";
+    cout << "    editTask    edit task with sqecified id\n";
     cout << "    help        Show this help message\n";
     cout << "    quit        Current user quit\n";
     cout << "-----------------------------------------------" << endl;
@@ -190,8 +200,6 @@ bool checkTime(const string time)
     // 使用正则表达式匹配字符串
     return regex_match(time, regex);
 }
-
-
 
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
@@ -368,7 +376,6 @@ void delTask(vector<Task> &tasks, const User *user)
     cout << "\033[42mDelete task complete!\033[0m" << endl;
 }
 
-
 void showSingleTask(const Task &task)
 {
     printf("%2d\t%-12s%-24s%-12s%-16s%-24s%s\n", task.id, task.name, convertTimeToString(task.s_time).c_str(),
@@ -376,3 +383,114 @@ void showSingleTask(const Task &task)
            convertTimeToString(task.rem).c_str(), task.detail);
 }
 
+void editTask(vector<Task> &tasks, const User *user)
+{
+    int id;
+    cout << "\033[32mPlease input task id:\033[0m\n";
+    cin >> id;
+    cin.get();
+
+    string command;
+
+    Task *editTask;
+    for (Task &task : tasks)
+    {
+        if (task.id == id)
+        {
+            editTask = &task;
+            break;
+        }
+    }
+
+    // task name
+    cout << "\033[32mTask Name: " << editTask->name << endl;
+    cout << "Change or not? (y to change)   \033[0m";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        strncpy(editTask->name, command.c_str(), sizeof(editTask->name) - 1);
+    }
+
+    // start time
+    cout << "\033[32mStart Time: " << convertTimeToString(editTask->s_time) << endl;
+    cout << "Change or not? (y to change)  \033[0m";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        if (!checkTime(command))
+        {
+            cout << "\033[31mInvalid start time! Please check again!\033[0m\n";
+        }
+        else
+        {
+            time_t s_time = convertToTime(command);
+            editTask->s_time = s_time;
+        }
+    }
+
+    // priority
+    cout << "\033[32mPriority: " << convertPriorityToString(editTask->prio) << endl;
+    cout << "Change or not? (y to change)   \033[0m";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        Priority prio = convertToPriority(command);
+        editTask->prio = prio;
+    }
+
+    // category
+    cout << "\033[32mCategory: " << convertCategoryToString(editTask->cat) << endl;
+    cout << "Change or not? (y to change)   \033[0m";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        Category cat = convertToCategory(command);
+        editTask->cat = cat;
+    }
+
+    // remind time
+    cout << "\033[32mRemind Time: " << convertTimeToString(editTask->rem) << endl;
+    cout << "Change or not? (y to change)   \033[0m";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        if (!checkTime(command))
+        {
+            cout << "\033[31mInvalid remind time! Please check again!\033[0m\n";
+        }
+        else
+        {
+            time_t rem = convertToTime(command);
+            editTask->rem = rem;
+        }
+    }
+
+    // details
+    cout << "\033[32mDetails: " << editTask->detail << endl;
+    cout << "Change or not? (y to change)\033[0m   ";
+    getline(cin, command);
+    transform(command.begin(), command.end(), command.begin(), ::tolower);
+    if (command == "y")
+    {
+        getline(cin, command);
+        strncpy(editTask->detail, command.c_str(), sizeof(editTask->detail) - 1);
+    }
+
+    // tasks.erase(remove_if(tasks.begin(), tasks.end(), [id](const Task &task)
+    //                       { return task.id == id; }),
+    //             tasks.end());
+    // tasks.push_back(editTask);
+
+    saveTask(tasks, user);
+    cout << "\033[32mTask id " << editTask->id << " edit complete!\033[0m\n";
+}

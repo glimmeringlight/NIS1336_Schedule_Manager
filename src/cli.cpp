@@ -498,7 +498,7 @@ void altTask(int argc, char * argv[]){
     time_t cur;
     time(&cur);
 
-    if(cur > stime || cur > rtime){
+    if(cur > stime){
         printf("Cannot use past time!\n");
         exit(-1);
     }

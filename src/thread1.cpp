@@ -493,4 +493,5 @@ void editTask(vector<Task> &tasks, const User *user)
 
     saveTask(tasks, user);
     cout << "\033[32mTask id " << editTask->id << " edit complete!\033[0m\n";
+    showSingleTask(*editTask);
 }

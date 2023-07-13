@@ -23,17 +23,8 @@ std::string taskToString(Task task);
 void delTask(std::vector<Task> tasks, const User *user);
 
 bool checkTime(const string time);
-bool checkDay(const string time);
-bool checkMonth(const string time);
-bool checkYear(const string time);
 
-void searchTask(const vector<Task> &tasks);
 void showSingleTask(const Task &task);
-void searchTaskPrio(const vector<Task> &tasks, const string prioStr);
-void searchTaskCat(const vector<Task> &tasks, const string catStr);
-void searchTaskDay(const vector<Task> &tasks, const string dateStr);
-void searchTaskMonth(const vector<Task> &tasks, const string dateStr);
-void searchTaskYear(const vector<Task> &tasks, const string dateStr);
-void searchTaskHelp();
+
 
 #endif

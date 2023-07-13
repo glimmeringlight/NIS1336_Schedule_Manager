@@ -1,6 +1,7 @@
 #include "thread1.h"
 #include "types.h"
 #include "Tasks.h"
+#include "search.h"
 using namespace std;
 
 void *thread1(void *thread_arg)
@@ -27,7 +28,7 @@ void *thread1(void *thread_arg)
         if (command == "run") // 开始轮询
         {
             cout << "-----------------------------------------------" << endl;
-            cout << "Please input commands!\n";
+            cout << "\033[32mPlease input commands!\033[0m\n";
             while (1)
             {
                 // 需要重新加载任务
@@ -46,9 +47,9 @@ void *thread1(void *thread_arg)
 
                     while (!over)
                     {
-                        cout << "Please input task info:" << endl;
-                        cout << "Format as below:" << endl;
-                        cout << "Task Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
+                        cout << "\033[32mPlease input task info:\033[0m" << endl;
+                        cout << "\033[32mFormat as below:\033[0m" << endl;
+                        cout << "\033[32mTask Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details\033[0m" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
 
@@ -58,15 +59,15 @@ void *thread1(void *thread_arg)
                         // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
-                        cout << "Add task complete!" << endl;
+                        cout << "\033[42mAdd task complete!\033[0m" << endl;
                         cout << "-----------------------------------------------" << endl;
 
-                        cout << "Continue add task? (\"n\" to stop)" << endl;
+                        cout << "\033[32mContinue add task? (\"n\" to stop)\033[0m" << endl;
                         getline(cin, overStr);
                         if (overStr == "n")
                         {
                             over = true;
-                            cout << "Quit add task" << endl;
+                            cout << "\033[42mQuit add task\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
                         }
                     }
@@ -101,7 +102,7 @@ void *thread1(void *thread_arg)
 
                     while (!over)
                     {
-                        cout << "Please input task id:" << endl;
+                        cout << "\033[32mPlease input task id:\033[0m" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
                         // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
@@ -112,12 +113,12 @@ void *thread1(void *thread_arg)
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "-----------------------------------------------" << endl;
 
-                        cout << "Continue delete task? (\"n\" to stop)" << endl;
+                        cout << "\033[32mContinue delete task? (\"n\" to stop)\033[0m" << endl;
                         getline(cin, overStr);
                         if (overStr == "n")
                         {
                             over = true;
-                            cout << "Quit delete task" << endl;
+                            cout << "\033[42mQuit delete task\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
                         }
                     }
@@ -140,13 +141,13 @@ void *thread1(void *thread_arg)
                 if (command == "quit")
                 {
                     stop = true;
-                    cout << "User:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!" << endl;
+                    cout << "\033[32mUser:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!\033[0m" << endl;
                     ((Thread_Arg *)thread_arg)->running = false;
                     break;
                 }
                 else
                 {
-                    cout << "ERROR: Command \"" << command << "\" not found! Please check again!" << endl;
+                    cout << "\033[41mERROR: Command \"" << command << "\" not found! Please check again!\033[0m" << endl;
                     printHelp();
                     continue;
                 }
@@ -154,7 +155,7 @@ void *thread1(void *thread_arg)
         }
         else if (command != "run")
         {
-            cout << "Unknown command \"" << command << "\"! Type \"run\" to start input shcedules!\n";
+            cout << "\033[41mUnknown command \"" << command << "\"! Type \"run\" to start input shcedules!\033[0m\n";
             printHelp();
         }
     }
@@ -163,7 +164,7 @@ void *thread1(void *thread_arg)
 
 void printHelp()
 {
-    cout << "Usage: [options]\n";
+    cout << "\033[32mUsage: [options]\033[0m\n";
     cout << "Options:\n";
     cout << "    run         Begin polling user tasks\n";
     cout << "When polling begin:\n";
@@ -190,29 +191,7 @@ bool checkTime(const string time)
     return regex_match(time, regex);
 }
 
-bool checkDay(const string time)
-{
-    // 合法为true
-    string pattern = R"(^\d{4}-\d{2}-\d{2}$)";
-    regex regex(pattern);
-    return regex_match(time, regex);
-}
 
-bool checkMonth(const string time)
-{
-    // 合法为true
-    string pattern = R"(^\d{4}-\d{2}$)";
-    regex regex(pattern);
-    return regex_match(time, regex);
-}
-
-bool checkYear(const string time)
-{
-    // 合法为true
-    string pattern = R"(^\d{4}$)";
-    regex regex(pattern);
-    return regex_match(time, regex);
-}
 
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
@@ -236,7 +215,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         {
             if (!checkTime(sTimeStr))
             {
-                cout << "Invalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                cout << "\033[41mInvalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS\033[0m" << endl;
                 return;
             }
             else
@@ -262,7 +241,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
                             rem = s_time;
                         else if (!checkTime(remStr))
                         {
-                            cout << "Invalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                            cout << "\033[41mInvalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS\033[0m" << endl;
                             return;
                         }
                         else
@@ -270,7 +249,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 
                         if (rem > s_time)
                         {
-                            cout << "Invalid remind time! Please check again" << endl;
+                            cout << "\033[41mInvalid remind time! Please check again\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
 
                             return;
@@ -307,7 +286,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         }
     }
     if (NoError == false)
-        cout << "Invalid Input! Please check again!" << endl;
+        cout << "\033[41mInvalid Input! Please check again!\033[0m" << endl;
 }
 
 void saveSingleTask(const Task task, const User *user)
@@ -320,7 +299,7 @@ void saveSingleTask(const Task task, const User *user)
 
     if (!file)
     {
-        cout << "Failed to open task file for saving!\n";
+        cout << "\033[41mFailed to open task file for saving!\033[0m\n";
         return;
     }
 
@@ -374,7 +353,7 @@ void delTask(vector<Task> tasks, const User *user)
 
     if (!idExists)
     {
-        cout << "ERROR: Task with ID " << currentID << " does not exist! Please check again." << endl;
+        cout << "\033[41mERROR: Task with ID " << currentID << " does not exist! Please check again.\033[0m" << endl;
         return;
     }
 
@@ -386,92 +365,9 @@ void delTask(vector<Task> tasks, const User *user)
     // 更新文件
     // 重新写入
     saveTask(tasks, user);
-    cout << "Delete task complete!" << endl;
+    cout << "\033[42mDelete task complete!\033[0m" << endl;
 }
 
-void searchTask(const vector<Task> &tasks)
-{
-    searchTaskHelp();
-    int type;
-    cin >> type;
-    cin.get();
-
-    switch (type)
-    {
-    case 1:
-    {
-        cout << "Please input the priority you want to search: (HIGH, MODERATE, LOW)\n";
-        string prioStr;
-        getline(cin, prioStr);
-        transform(prioStr.begin(), prioStr.end(), prioStr.begin(), ::toupper);
-
-        searchTaskPrio(tasks, prioStr);
-        break;
-    }
-
-    case 2:
-    {
-        cout << "Please input the category you want to search: (STUDY, LIFE, ENTERTAINMENT)\n";
-        string catStr;
-        getline(cin, catStr);
-        transform(catStr.begin(), catStr.end(), catStr.begin(), ::toupper);
-
-        searchTaskCat(tasks, catStr);
-        break;
-    }
-    case 3:
-    {
-        cout << "Please input the date(YYYY-MM-DD) you want to search:\n";
-        string dateStr;
-        getline(cin, dateStr);
-
-        if (!checkDay(dateStr))
-        {
-            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
-            return;
-        }
-
-        searchTaskDay(tasks, dateStr);
-        break;
-    }
-    case 4:
-    {
-        cout << "Please input the month(YYYY-MM) you want to search:\n";
-        string dateStr;
-        getline(cin, dateStr);
-
-        if (!checkMonth(dateStr))
-        {
-            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
-            return;
-        }
-
-        searchTaskMonth(tasks, dateStr);
-        break;
-    }
-    case 5:
-    {
-        cout << "Please input the year(YYYY) you want to search:\n";
-        string dateStr;
-        getline(cin, dateStr);
-
-        if (!checkYear(dateStr))
-        {
-            cout << "Invalid date! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
-            return;
-        }
-
-        searchTaskYear(tasks, dateStr);
-        break;
-    }
-    default:
-    {
-        cout << "Unknown type! Please check again!\n";
-    }
-    }
-
-    // cout << "Search task complete!\n";
-}
 
 void showSingleTask(const Task &task)
 {
@@ -480,123 +376,3 @@ void showSingleTask(const Task &task)
            convertTimeToString(task.rem).c_str(), task.detail);
 }
 
-void searchTaskPrio(const vector<Task> &tasks, const string prioStr)
-{
-    Priority prio = convertToPriority(prioStr);
-    cout << "Tasks with priority " << prioStr << ":" << endl;
-    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
-    bool noMatch = true;
-
-    for (const Task &task : tasks)
-    {
-        if (task.prio == prio)
-        {
-            showSingleTask(task);
-            noMatch = false;
-        }
-    }
-
-    if (noMatch)
-    {
-        cout << "Tasks with priority " << prioStr << " not found!" << endl;
-    }
-}
-
-void searchTaskCat(const vector<Task> &tasks, const string catStr)
-{
-    Category cat = convertToCategory(catStr);
-    cout << "Tasks with category " << catStr << ":" << endl;
-    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
-    bool noMatch = true;
-
-    for (const Task &task : tasks)
-    {
-        if (task.cat == cat)
-        {
-            showSingleTask(task);
-            noMatch = false;
-        }
-    }
-
-    if (noMatch)
-    {
-        cout << "Tasks with category " << catStr << " not found!" << endl;
-    }
-}
-
-void searchTaskDay(const vector<Task> &tasks, const string dateStr)
-{
-    cout << "Tasks with date " << dateStr << ":" << endl;
-    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
-    bool noMatch = true;
-
-    for (const Task &task : tasks)
-    {
-        string currentDate = convertTimeToString(task.s_time).substr(0, 10);
-        if (currentDate == dateStr)
-        {
-            showSingleTask(task);
-            noMatch = false;
-        }
-    }
-
-    if (noMatch)
-    {
-        cout << "Tasks with date " << dateStr << " not found!" << endl;
-    }
-}
-
-void searchTaskMonth(const vector<Task> &tasks, const string dateStr)
-{
-    cout << "Tasks with month " << dateStr << ":" << endl;
-    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
-    bool noMatch = true;
-
-    for (const Task &task : tasks)
-    {
-        string currentDate = convertTimeToString(task.s_time).substr(0, 7);
-        if (currentDate == dateStr)
-        {
-            showSingleTask(task);
-            noMatch = false;
-        }
-    }
-
-    if (noMatch)
-    {
-        cout << "Tasks with month " << dateStr << " not found!" << endl;
-    }
-}
-
-void searchTaskYear(const vector<Task> &tasks, const string dateStr)
-{
-    cout << "Tasks with year " << dateStr << ":" << endl;
-    printf("%2s\t%-12s%-24s%-12s%-16s%-24s%s\n", "ID", "Task Name", "Start Time", "Priority", "Category", "Remind Time", "Details");
-    bool noMatch = true;
-
-    for (const Task &task : tasks)
-    {
-        string currentDate = convertTimeToString(task.s_time).substr(0, 4);
-        if (currentDate == dateStr)
-        {
-            showSingleTask(task);
-            noMatch = false;
-        }
-    }
-
-    if (noMatch)
-    {
-        cout << "Tasks with year " << dateStr << " not found!" << endl;
-    }
-}
-
-void searchTaskHelp()
-{
-    cout << "Please choose the type of task showing:" << endl;
-    cout << "1:\tSearch tasks with the same Priority (Default: LOW)\n";
-    cout << "2:\tSearch tasks with the same Category (Default: STUDY)\n";
-    cout << "3:\tSearch tasks that start at the same day\n";
-    cout << "4:\tSearch tasks that start at the same month\n";
-    cout << "5:\tSearch tasks that start at the same year\n";
-    cout << "-----------------------------------------------" << endl;
-}

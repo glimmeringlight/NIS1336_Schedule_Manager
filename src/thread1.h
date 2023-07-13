@@ -20,7 +20,11 @@ void getCurrent(std::vector<Task> &tasks, std::string currentLine, const User *u
 void saveSingleTask(const Task task, const User *user);
 void addTask(std::vector<Task> &tasks, const User *user);
 std::string taskToString(Task task);
-void delTask(std::vector<Task> tasks, const User *user);
+void delTask(std::vector<Task> &tasks, const User *user);
+
 bool checkTime(const string time);
+
+void showSingleTask(const Task &task);
+
 
 #endif

@@ -11,7 +11,7 @@
 void *thread2(void * arg){
     printf("CheckTask begins!\n");
     int flag = 1;
-    int check_interval = 3;
+    int check_interval = 5;
     int i = 0;
 
     //get args
@@ -49,10 +49,10 @@ void *thread2(void * arg){
             if(task_time->tm_mon != current_time->tm_mon) continue;
             if(task_time->tm_mday != current_time->tm_mday) continue;
             // day match if here
-            difft = difftime(tasklist[i].rem, timep);
+            // difft = difftime(tasklist[i].rem, timep);
 
-            if(difft > 0 && difft < 5*60){
-                std::cout << "Arrving task " << tasklist[i].id << ", " << tasklist[i].name << " : " << tasklist[i].detail << ". " << std::endl;
+            if(tasklist[i].rem < timep && timep < tasklist[i].s_time){
+                std::cout << "\033[31mArrving task " << tasklist[i].id << ", " << tasklist[i].name << " : " << tasklist[i].detail << ". \033[0m" << std::endl;
             }
 
         }

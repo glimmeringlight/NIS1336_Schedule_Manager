@@ -1,6 +1,7 @@
 #include "thread1.h"
 #include "types.h"
 #include "Tasks.h"
+#include "search.h"
 using namespace std;
 
 void *thread1(void *thread_arg)
@@ -27,7 +28,7 @@ void *thread1(void *thread_arg)
         if (command == "run") // 开始轮询
         {
             cout << "-----------------------------------------------" << endl;
-            cout << "Please input commands!\n";
+            cout << "\033[32mPlease input commands!\033[0m\n";
             while (1)
             {
                 // 需要重新加载任务
@@ -46,9 +47,9 @@ void *thread1(void *thread_arg)
 
                     while (!over)
                     {
-                        cout << "Please input task info:" << endl;
-                        cout << "Format as below:" << endl;
-                        cout << "Task Name,Remind Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details" << endl;
+                        cout << "\033[32mPlease input task info:\033[0m" << endl;
+                        cout << "\033[32mFormat as below:\033[0m" << endl;
+                        cout << "\033[32mTask Name,Start Time(YYYY-MM-DD HH:MM:SS),Priority(low,mederate,high),Category(study,life,entermaint),Remind Time(YYYY-MM-DD HH:MM:SS),Details\033[0m" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
 
@@ -58,15 +59,15 @@ void *thread1(void *thread_arg)
                         // saveTask(tasks, ((Thread_Arg *)thread_arg)->user);
 
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
-                        cout << "Add task complete!" << endl;
+                        cout << "\033[42mAdd task complete!\033[0m" << endl;
                         cout << "-----------------------------------------------" << endl;
 
-                        cout << "Continue add task? (\"n\" to stop)" << endl;
+                        cout << "\033[32mContinue add task? (\"n\" to stop)\033[0m" << endl;
                         getline(cin, overStr);
                         if (overStr == "n")
                         {
                             over = true;
-                            cout << "Quit add task" << endl;
+                            cout << "\033[42mQuit add task\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
                         }
                     }
@@ -84,6 +85,16 @@ void *thread1(void *thread_arg)
 
                     continue;
                 }
+                if (command == "searchtask")
+                {
+                    pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
+                    searchTask(tasks);
+                    pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
+
+                    cout << "-----------------------------------------------" << endl;
+
+                    continue;
+                }
                 if (command == "deltask")
                 {
                     bool over = false;
@@ -91,7 +102,7 @@ void *thread1(void *thread_arg)
 
                     while (!over)
                     {
-                        cout << "Please input task id:" << endl;
+                        cout << "\033[32mPlease input task id:\033[0m" << endl;
 
                         pthread_mutex_lock(((Thread_Arg *)thread_arg)->mutex);
                         // loadTask(tasks, ((Thread_Arg *)thread_arg)->user);
@@ -102,12 +113,12 @@ void *thread1(void *thread_arg)
                         pthread_mutex_unlock(((Thread_Arg *)thread_arg)->mutex);
                         cout << "-----------------------------------------------" << endl;
 
-                        cout << "Continue delete task? (\"n\" to stop)" << endl;
+                        cout << "\033[32mContinue delete task? (\"n\" to stop)\033[0m" << endl;
                         getline(cin, overStr);
                         if (overStr == "n")
                         {
                             over = true;
-                            cout << "Quit delete task" << endl;
+                            cout << "\033[42mQuit delete task\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
                         }
                     }
@@ -130,13 +141,13 @@ void *thread1(void *thread_arg)
                 if (command == "quit")
                 {
                     stop = true;
-                    cout << "User:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!" << endl;
+                    cout << "\033[32mUser:" << ((Thread_Arg *)thread_arg)->user->username << " Quit!\033[0m" << endl;
                     ((Thread_Arg *)thread_arg)->running = false;
                     break;
                 }
                 else
                 {
-                    cout << "ERROR: Command \"" << command << "\" not found! Please check again!" << endl;
+                    cout << "\033[41mERROR: Command \"" << command << "\" not found! Please check again!\033[0m" << endl;
                     printHelp();
                     continue;
                 }
@@ -144,7 +155,7 @@ void *thread1(void *thread_arg)
         }
         else if (command != "run")
         {
-            cout << "Unknown command \"" << command << "\"! Type \"run\" to start input shcedules!\n";
+            cout << "\033[41mUnknown command \"" << command << "\"! Type \"run\" to start input shcedules!\033[0m\n";
             printHelp();
         }
     }
@@ -153,14 +164,17 @@ void *thread1(void *thread_arg)
 
 void printHelp()
 {
-    cout << "Usage: [options]\n";
+    cout << "\033[32mUsage: [options]\033[0m\n";
     cout << "Options:\n";
     cout << "    run         Begin polling user tasks\n";
     cout << "When polling begin:\n";
-    cout << "    addTask     show all info with the sort of id (smallest id comes first)\n";
-    cout << "    showTask    show the info of the student with the highest socre\n";
-    cout << "    delTask     show average score\n";
+    cout << "    addTask     Add tasks\n";
+    cout << "    showTask    Show all task (earliest start time comes first)\n";
+    cout << "    delTask     Delete tasks\n";
+    cout << "    saveTask    Save tasks to local file\n";
+    cout << "    searchTask  Search tasks with same feature\n";
     cout << "    help        Show this help message\n";
+    cout << "    quit        Current user quit\n";
     cout << "-----------------------------------------------" << endl;
 }
 
@@ -176,6 +190,8 @@ bool checkTime(const string time)
     // 使用正则表达式匹配字符串
     return regex_match(time, regex);
 }
+
+
 
 void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 {
@@ -199,7 +215,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         {
             if (!checkTime(sTimeStr))
             {
-                cout << "Invalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                cout << "\033[41mInvalid start time! Please input with the format: YYYY-MM-DD HH:MM:SS\033[0m" << endl;
                 return;
             }
             else
@@ -225,7 +241,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
                             rem = s_time;
                         else if (!checkTime(remStr))
                         {
-                            cout << "Invalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS" << endl;
+                            cout << "\033[41mInvalid remind time! Please input with the format: YYYY-MM-DD HH:MM:SS\033[0m" << endl;
                             return;
                         }
                         else
@@ -233,7 +249,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
 
                         if (rem > s_time)
                         {
-                            cout << "Invalid remind time! Please check again" << endl;
+                            cout << "\033[41mInvalid remind time! Please check again\033[0m" << endl;
                             cout << "-----------------------------------------------" << endl;
 
                             return;
@@ -270,7 +286,7 @@ void getCurrent(vector<Task> &tasks, string currentLine, const User *user)
         }
     }
     if (NoError == false)
-        cout << "Invalid Input! Please check again!" << endl;
+        cout << "\033[41mInvalid Input! Please check again!\033[0m" << endl;
 }
 
 void saveSingleTask(const Task task, const User *user)
@@ -283,7 +299,7 @@ void saveSingleTask(const Task task, const User *user)
 
     if (!file)
     {
-        cout << "Failed to open task file for saving!\n";
+        cout << "\033[41mFailed to open task file for saving!\033[0m\n";
         return;
     }
 
@@ -316,7 +332,7 @@ string taskToString(Task task)
     return oss.str();
 }
 
-void delTask(vector<Task> tasks, const User *user)
+void delTask(vector<Task> &tasks, const User *user)
 {
     // string taskLine;
     // Task currentTask;
@@ -337,7 +353,7 @@ void delTask(vector<Task> tasks, const User *user)
 
     if (!idExists)
     {
-        cout << "ERROR: Task with ID " << currentID << " does not exist! Please check again." << endl;
+        cout << "\033[41mERROR: Task with ID " << currentID << " does not exist! Please check again.\033[0m" << endl;
         return;
     }
 
@@ -349,9 +365,14 @@ void delTask(vector<Task> tasks, const User *user)
     // 更新文件
     // 重新写入
     saveTask(tasks, user);
-    cout << "Delete task complete!" << endl;
+    cout << "\033[42mDelete task complete!\033[0m" << endl;
 }
 
-void addTaskNew(vector<Task> &tasks, const User *user)
+
+void showSingleTask(const Task &task)
 {
+    printf("%2d\t%-12s%-24s%-12s%-16s%-24s%s\n", task.id, task.name, convertTimeToString(task.s_time).c_str(),
+           convertPriorityToString(task.prio).c_str(), convertCategoryToString(task.cat).c_str(),
+           convertTimeToString(task.rem).c_str(), task.detail);
 }
+

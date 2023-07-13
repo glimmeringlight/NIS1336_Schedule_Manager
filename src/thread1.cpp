@@ -180,8 +180,8 @@ void printHelp()
     cout << "    addTask     Add tasks\n";
     cout << "    showTask    Show all task (earliest start time comes first)\n";
     cout << "    delTask     Delete tasks\n";
-    cout << "    saveTask    Save tasks to local file\n";
-    cout << "    searchTask  Search tasks with same feature\n";
+    // cout << "    saveTask    Save tasks to local file\n";
+    // cout << "    searchTask  Search tasks with same feature\n";
     cout << "    editTask    edit task with sqecified id\n";
     cout << "    help        Show this help message\n";
     cout << "    quit        Current user quit\n";
